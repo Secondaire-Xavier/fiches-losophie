@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Gestionnaire de Cours de Philosophie</title>
+
+<style>
+/* ====== STYLE ====== */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 950px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+  margin-top: 0;
+  color: #8B4000;
+}
+
+.subtitle {
+  color: #555;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.full {
+  width: 100%;
+  padding: 8px;
+}
+
+input, textarea {
+  border: 1px solid #d7a96b;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+button {
+  padding: 8px 12px;
+  background: #cc7a00;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #a86300;
+}
+
+button.green { background: #228b22; }
+button.green:hover { background: #186118; }
+
+button.grey { background: #777; }
+button.grey:hover { background: #555; }
+
+button.red { background: #dc3545; color: white; }
+button.red:hover { background: #c82333; }
+
+.hidden { display: none; }
+
+.tag {
+  background: #ffe3b3;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tag .remove {
+  cursor: pointer;
+  color: #a00;
+}
+
+.tag-container {
+  margin-top: 10px;
+}
+
+.small .tag {
+  background: #d7e7ff;
+}
+
+.course-card {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.course-card h3 {
+  margin: 0 0 10px;
+  color: #8B4000;
+  padding-right: 140px;
+}
+
+.course-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  padding: 6px 10px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-icon:hover {
+  background: #d0d0d0;
+}
+
+.btn-icon.delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-icon.delete:hover {
+  background: #c82333;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- En-tête -->
+  <div class="card header">
+    <h1>Gestionnaire de Cours de Philosophie</h1>
+    <p class="subtitle">Recherchez par auteur ou thème</p>
+  </div>
+
+  <!-- Recherche -->
+  <div class="card">
+    <div class="row">
+      <input id="searchInput" type="text" placeholder="Entrez un auteur ou thème...">
+      <button id="searchBtn">Rechercher</button>
+      <button id="toggleAdd">Ajouter</button>
+    </div>
+
+    <div id="searchTags" class="tag-container"></div>
+  </div>
+
+  <!-- Formulaire d'ajout -->
+  <div id="addForm" class="card hidden">
+    <h2>Ajouter un morceau de cours</h2>
+
+    <input id="newTitle" type="text" placeholder="Titre du cours" class="full">
+
+    <textarea id="newContent" placeholder="Contenu du cours" rows="6" class="full"></textarea>
+
+    <div class="row2">
+      <div>
+        <h4>Auteurs</h4>
+        <div class="row">
+          <input id="newAuthor" type="text" placeholder="Auteur">
+          <button id="addAuthor">+</button>
+        </div>
+        <div id="authorsList" class="tag-container small"></div>
+      </div>
+
+      <div>
+        <h4>Thèmes</h4>
+        <div class="row">
+          <input id="newTheme" type="text" placeholder="Thème">
+          <button id="addTheme">+</button>
+        </div>
+        <div id="themesList" class="tag-container small"></div>
+      </div>
+    </div>
+
+    <button id="saveCourse" class="green">Enregistrer</button>
+    <button id="cancelAdd" class="grey">Annuler</button>
+  </div>
+
+  <!-- Résultats -->
+  <p id="resultsCount"></p>
+  <div id="courses"></div>
+
+</div>
+
+
+<script>
+/* ===========================================================
+   =============== DONNÉES DES COURS ==========================
+   =========================================================== */
+
+const initialCourses = [
+  {
+    id: 1,
+    title: "Pascal : La condition humaine et les limites de la raison",
+    content: `Pascal établit un constat sévère : l'homme est indifférent aux questions existentielles importantes mais obsédé par des choses futiles. Sa grandeur réside dans sa conscience de sa misère (il sait qu'il est misérable), mais cette conscience ne supprime pas sa misère. L'homme est un "roseau pensant" - faible physiquement mais capable de pensée.
+
+La vanité de l'homme se manifeste dans des exemples comme l'avocat qui se réduit à sa robe, content de son statut sans comprendre son vide intérieur. L'imagination domine souvent la raison : même un philosophe sur une planche au-dessus d'un précipice aura peur malgré sa raison.
+
+Citation clé : "La dernière démarche de la raison, c'est de reconnaître qu'il y a une infinité de choses qui la surpassent." Être rationnel n'est pas croire que la raison peut tout expliquer, mais accepter ses limites. Les axiomes ne peuvent être prouvés par la raison - c'est contradictoire de dire que la raison peut tout expliquer.
+
+Sur les rêves, Pascal critique Descartes : on sait qu'on ne rêve pas, mais on ne peut le prouver rationnellement. Cela montre la faiblesse de la raison, pas l'incertitude de nos connaissances. Les rêves manquent de continuité logique contrairement aux journées.`,
+    authors: ["Pascal"],
+    themes: ["Raison", "Conscience", "Vérité"]
+  },
+  {
+    id: 2,
+    title: "Pascal : Scepticisme, vérités de raison et intuitions du cœur",
+    content: `Pascal s'oppose au scepticisme qui affirme "si la raison ne peut pas prouver quelque chose, alors cette chose est objectivement douteuse." C'est une contradiction performative : cet axiome lui-même ne peut être prouvé par la raison, donc il est incertain et se contredit.
+
+Même reproche à l'empirisme : "toute connaissance vient des sens" or aucun sens ne vient confirmer cette théorie. C'est le même paralogisme.
+
+Pascal distingue deux types de vérités :
+1) Vérités de raison : démonstrations, théorèmes mathématiques qui découlent d'axiomes qui ne peuvent être prouvés
+2) Intuitions du cœur : intuitif et immédiat (l'infinité des nombres, le fait qu'on ne rêve pas, l'intuition de Dieu)
+
+On ne peut raisonner sans axiomes, mais les axiomes ne peuvent être fondés - cela exige une forme de modestie de l'homme. À moins de douter qu'on ne rêve pas, on est contraint d'y croire, mais ça ne signifie pas que c'est objectivement certain.
+
+Conséquences religieuses : on ne peut trouver Dieu par la raison, d'où le Pari de Pascal. Il montre aux libertins que s'ils ne croient pas, ce n'est pas par "surrationnalité" mais par orgueil. La solution passe par "la machine" (le corps, les gestes de la foi) : "Cherchez et vous trouverez."`,
+    authors: ["Pascal"],
+    themes: ["Raison", "Religion", "Vérité"]
+  },
+  {
+    id: 3,
+    title: "Calliclès vs Socrate : Le débat sur le bonheur et le désir (Gorgias de Platon)",
+    content: `Dans le Gorgias de Platon, Calliclès défend une vision hédoniste : le bonheur c'est le plaisir, il faut satisfaire tous ses désirs. Il est sophiste et relativiste (pas de vérité absolue). Pour lui, bonheur = optimisation du plaisir par rapport à la douleur (calcul utilitariste).
+
+Socrate objecte : désir = manque = souffrance. Plus on souffre, plus le plaisir est grand après. Mais alors bonheur = souffrance ? C'est contradictoire. De plus, le plaisir ne dure pas, donc nouvelle souffrance.
+
+Réponse de Calliclès : il faut toujours plus désirer pour avoir toujours du plaisir. Métaphore de Socrate : ton âme est une passoire, l'eau (satisfaction) s'écoule sans cesse.
+
+Calliclès est empiriste, réduit le bonheur au plaisir animal et présent. Il néglige l'imagination humaine : Rousseau montrera qu'anticiper le plaisir crée du bonheur (dimension imaginative). Calliclès confond bonheur humain et animal.
+
+Mais Calliclès a un argument fort : sans désir le matin, pas d'action. Pas de désir = pas de motivation = absence de vie. Vivre c'est agir. Un être sans désir est comme une pierre. Le désir nous pousse à vivre.
+
+Pour Socrate, le vrai bonheur c'est maîtriser ses désirs par la raison. Dans l'âme, trois instances : raison (philosophe), volonté (gardien), désir (plèbe). La raison doit subordonner les désirs. Être heureux = régler ses désirs, même si ça semble être le bonheur d'une pierre. Le tyran qui satisfait tous ses désirs est tyrannisé par eux, anxieux, ils peuvent se retourner contre lui.`,
+    authors: ["Platon", "Socrate", "Calliclès"],
+    themes: ["Bonheur", "Désir", "Raison"]
+  },
+  {
+    id: 4,
+    title: "Bentham : L'utilitarisme et le bonheur du plus grand nombre",
+    content: `Bentham fonde l'utilitarisme : le bonheur = satisfaire tous ses désirs. Sur le plan individuel, chercher le plaisir et fuir la douleur est la loi fondamentale de tout être vivant. Donc bonheur = optimiser le plaisir.
+
+Il s'oppose à Kant qui dit que l'homme tire sa dignité de sa raison (capacité morale). Pour Kant, il faut être digne d'être heureux, pas seulement heureux. Bentham répond que même la morale se fonde sur le plaisir : quand on veut être vertueux, c'est le plaisir de l'être qu'on cherche.
+
+Sur le plan collectif/politique : le but de l'État est d'augmenter le bonheur du plus grand nombre en donnant les moyens de satisfaire tous les désirs. C'est une vision politique qui peut négliger les droits individuels et la dignité humaine (politique sacrificielle possible).
+
+Utilitarisme de l'acte : utilité marginale décroissante. 1 euro a plus de valeur pour un SDF que pour un milliardaire. Faudrait-il voler un riche pour combler 3 personnes ?
+
+VS Utilitarisme de la règle : objection à l'acte. Si tout le monde rackettait, la peur généralisée créerait de la souffrance. Il faut imaginer ce que donnerait mon acte si tout le monde le pratiquait.
+
+Problème : le bonheur dépend de ce que la majorité conçoit comme bonheur. Tout est relatif ? Quid de la dignité humaine ? Exemple : les femmes en Inde qui ont intégré leur infériorisation.`,
+    authors: ["Bentham"],
+    themes: ["Bonheur", "Justice", "État"]
+  },
+  {
+    id: 5,
+    title: "Mill : Utilitarisme et hiérarchie des plaisirs",
+    content: `Mill poursuit l'utilitarisme de Bentham mais y ajoute une nuance essentielle : tous les désirs ne se valent pas. Certains sont préférables à d'autres et il faudrait les entretenir.
+
+Citation célèbre : "Mieux vaut être Socrate insatisfait qu'un imbécile heureux." 
+
+Expérience de pensée : des gens qui connaissent les Simpson ET Shakespeare préfèrent Shakespeare, même si c'est parfois moins plaisant immédiatement. Ils trouvent Shakespeare préférable sur le plan existentiel. Preuve que certains plaisirs sont supérieurs : ceux qui connaissent les deux aspects préfèrent les plaisirs "intellectuels". Ce n'est pas nécessairement plus intense comme plaisir, mais jugé plus digne.
+
+Mill se trouve dans une situation délicate : il veut garder la logique empiriste du plaisir tout en affirmant que certaines choses sont préférables. Il essaye de fonder la dignité et certaines valeurs sur des considérations pragmatiques.
+
+Sur le plan politique : Mill défend la liberté au nom du progrès social. Les minorités dissidentes sont utiles car elles affûtent les arguments de la majorité, facteur de progrès. Mais est-ce cohérent avec l'utilitarisme pur ? Le progrès social devient une valeur en soi.
+
+Problème : on peut imaginer un peuple de crétins satisfaits. "Mieux vaut être Socrate insatisfait" mais alors le bonheur n'est plus la valeur absolue. Mill veut "le beurre et l'argent du beurre" en conciliant utilitarisme et valeurs objectives.`,
+    authors: ["Mill"],
+    themes: ["Bonheur", "Liberté", "Justice"]
+  },
+  {
+    id: 6,
+    title: "Schopenhauer : Le vouloir-vivre, la souffrance et l'art",
+    content: `Schopenhauer, influencé par le bouddhisme et Hume, développe une philosophie pessimiste. Pour lui, le principe de causalité est une interprétation de notre esprit, pas le réel en soi. Donc le monde est absurde, pas besoin de créateur.
+
+Le seul accès absolu à la vérité : notre propre corps vécu de l'intérieur. Constat : tous les êtres vivants désirent, tendent à survivre. Le "vouloir-vivre" = élan vital inexpliqué.
+
+Désir = manque = souffrance. Quand on satisfait un désir, on s'ennuie. "La vie oscille comme un pendule de droite à gauche, de la souffrance à l'ennui." Cycle : manque → souffrance → satisfaction → ennui → nouveau désir.
+
+Le plaisir n'est que momentané, par contraste avec la souffrance (on sent son rhume quand il part). Le bonheur est impossible comme état stable et durable.
+
+Pourquoi continue-t-on à vivre malgré ce ratio défavorable douleur/plaisir ? Le vouloir-vivre nous pousse à survivre malgré l'absurdité. Preuves : la folie (le vouloir-vivre crée un monde parallèle pour éviter le suicide après un trauma) et l'instinct sexuel (survie de l'espèce - on cherche chez l'autre des qualités qui compensent les nôtres).
+
+Solutions pour atteindre une paix intérieure relative :
+- L'art : on s'oublie soi-même, plus de désir pour cette personne qu'on défend = libéré de soi
+- La philosophie : comprendre le monde fait qu'on s'oublie, on n'est plus suspendu à ses désirs
+- La morale fondée sur la pitié : révélation qu'on est tous la même chose, incarnations éphémères du vouloir-vivre
+
+Le "moi" est une illusion : on est des gouttes d'un océan, différentes en apparence mais même eau.`,
+    authors: ["Schopenhauer"],
+    themes: ["Bonheur", "Désir", "Art", "Conscience"]
+  },
+  {
+    id: 7,
+    title: "Rousseau : L'imagination, l'anticipation et le bonheur",
+    content: `Rousseau critique Calliclès : celui-ci réduit le plaisir humain au plaisir animal lié à la satisfaction d'un besoin physiologique, satisfaction face à l'objet réel et présent.
+
+Or grâce à son imagination, l'Homme peut anticiper la satisfaction d'un désir et jouir de ce qu'il n'a pas encore, comme s'il l'avait déjà. L'anticipation du plaisir est un désir présent qui crée du bonheur immédiat. Le moment le plus agréable est souvent quand on déballe un cadeau - on espère plein de choses.
+
+Citation : "Malheur à qui n'a plus rien à désirer, il perd pour ainsi dire tout ce qu'il possède = ennui."
+
+Dans La Nouvelle Héloïse, Julie a tout obtenu (son amant, sa raison) mais son corps est vide, elle n'a plus rien à désirer, donc s'ennuie. La satisfaction est toujours décevante au regard de ce qu'on en attendait.
+
+Pour Rousseau, le bonheur est lié au désir lui-même plutôt qu'à sa satisfaction. Le royaume de l'imagination est plus agréable que le réel (plus vaste, flou, on peut tout concilier). Autant y rester et cultiver ses désirs.
+
+Application : Dolto et l'enfant-roi. Problème : l'enfant qui obtient tout immédiatement n'apprend pas à ressentir la frustration, donc développe mal son imagination. Apprendre à différer la satisfaction des désirs permet de développer l'imagination. Sinon l'enfant devient un adulte malheureux, caractériel, handicapé du désir, incapable de rester seul.
+
+L'humain a des besoins (vital) ET des désirs (spiritualisation du besoin). Pas besoin de satisfaire un désir pour être heureux, y penser suffit.`,
+    authors: ["Rousseau"],
+    themes: ["Bonheur", "Désir", "Imagination"]
+  },
+  {
+    id: 8,
+    title: "Saint-Augustin : Dieu, l'amour et le bonheur religieux",
+    content: `Saint-Augustin propose une solution religieuse au problème du bonheur. Il s'oppose à Spinoza et aux stoïciens qui disent : fais dépendre ton bonheur uniquement de ce qui dépend de toi (ta compréhension rationnelle du monde).
+
+Objection d'Augustin : "Qui veut faire l'ange fait la bête" (Pascal). Ce n'est ni réaliste ni souhaitable. L'homme n'est pas un Dieu autosuffisant. Il est un être relationnel, de dépendance (Aristote : animal social). Robinson devient fou sur son île. On ne peut pas vivre seul ni être heureux seul.
+
+Distinction cruciale : espoir païen (incertitude liée à la crainte) VS espérance chrétienne (certitude, propre de la foi).
+
+Solution d'Augustin : faire dépendre son bonheur de quelqu'un qui ne peut ni mourir ni nous quitter = Dieu. Bonheur non terni par la crainte et l'incertitude. On peut aimer les autres "en Dieu" : les aimer en ce qu'ils peuvent être sauvés, en tant qu'âmes immortelles. Après la mort de sa mère, Augustin était presque joyeux par l'espérance de la retrouver dans la vie éternelle.
+
+Théorie du désir : tous nos désirs particuliers (contingents) sont des incarnations d'un désir primordial, fondamental = le désir d'infini, le désir de Dieu. Les désirs particuliers sont comme les branches d'un arbre, productions d'un désir fondamental. On essaie de combler un désir infini avec des choses finies (Black Friday). On trouve les objets beaux parce qu'on veut les acheter (Spinoza), pour tenter de ne plus désirer.
+
+Citations : "Tu nous as fait pour toi Seigneur..." et "Tu es plus intérieur à moi-même que moi-même." Dieu seul peut satisfaire ce désir d'infini. En le satisfaisant, on n'a plus besoin des substitutions contingentes. Pas de frustration car chaque jour on est content de mieux le connaître, on ne fait pas le tour de Dieu.`,
+    authors: ["Saint-Augustin"],
+    themes: ["Bonheur", "Religion", "Désir"]
+  },
+  {
+    id: 9,
+    title: "Russell : Hédonisme altruiste et intégration sociale",
+    content: `Russell concilie le plaisir avec la morale en distinguant deux figures :
+
+1) Le moraliste : fait une différence entre lui et le monde = intérêts divergents = le sacrifice moral est douloureux, abnégation consciente (obsédé par son sacrifice)
+
+2) L'hédoniste (vision de Russell) : ne sépare pas le bonheur de la vertu. "On ne demande pas à l'homme de se sacrifier mais de placer ses intérêts en dehors de soi."
+
+Argument : nous sommes constitués par les autres, les autres nous habitent. Exemple : bonne note - on en est heureux car on est pétri par les attentes des autres. Le moi n'est pas séparé du monde. Si je place mon intérêt dans le fait que la classe soit la meilleure possible, aider les autres = agir dans mon intérêt.
+
+Hédoniste altruiste : comprend que son intérêt est l'intérêt des autres car il ne peut pas être heureux seul. Même état d'esprit, même actes mais différent du moraliste.
+
+Le malheur = désintégration = manque de coordination entre conscient et inconscient (conflit intérieur) OU manque d'intégration entre moi et société. Difficile aujourd'hui car la société est fragmentée en archipel d'îles (plus de valeurs communes, religion, passé commun). Communauté européenne : c'est quoi l'intérêt commun ?
+
+Avant : valeurs républicaines, rapport à l'histoire créaient identité commune et intérêt commun (exemple : Marcel Pagnol, se sacrifier pour la patrie).
+
+La vraie joie la plus intense : toujours celle qui nous relie au reste du monde (mère qui se réjouit de la réussite de son enfant) VS joie du shopping moins englobante.
+
+Même la mort n'est plus troublante si on s'identifie aux générations futures. Jean Moulin fait partie de cette génération future, son bonheur en dépend.`,
+    authors: ["Russell"],
+    themes: ["Bonheur", "Morale", "Liberté"]
+  },
+  {
+    id: 10,
+    title: "Spinoza : Déterminisme, liberté et amour intellectuel",
+    content: `Spinoza commence à philosopher après avoir été amoureux de sa prof de latin. Lettre : "J'ai compris qu'il était possible que je ne sois jamais heureux car mon bonheur ne dépend pas de moi = l'amour, la richesse, les honneurs." Si mon bonheur dépend de ce qui ne dépend pas de moi, je suis dans l'espoir/crainte. Espoir = crainte (on espère une bonne note donc on craint de ne pas l'avoir). Anxiété de l'incertitude du futur.
+
+Solution : faire reposer son bonheur sur ce qui dépend de soi = la raison, seule chose qu'on ne peut pas perdre. Échanger une joie contre une autre : passer de la passivité de l'amour à l'action de la raison. La joie de comprendre pourquoi je l'aime console de la non-réciprocité.
+
+Il faut échanger de plus en plus d'affects passifs (ce que le monde inspire comme désir) contre des affects actifs (compréhension rationnelle). Vision intellectualiste du bonheur. Inspiration stoïcienne : profiter des plaisirs du buffet sans en dépendre.
+
+Déterminisme : tout est déterminé. En comprenant que le monde ne peut pas être différent, cesser d'espérer et aimer ce qui est. On ne s'énerve pas contre le psychopathe déterminé par ses causes. "On trouve les choses bonnes parce qu'on les désire" (et non l'inverse). Exemple : on trouve les épinards bons donc ils sont bons.
+
+Objection : l'homme n'est pas un empire dans un empire. Si la nature est déterminée, moi aussi. Pas de libre arbitre. Mais liberté = dire oui à la nécessité, aimer ce monde nécessaire, s'affranchir des désirs qui rendent malheureux. Faire dépendre mon bonheur que de ce qui dépend de moi = compréhension du déterminisme.
+
+Pour Spinoza : seul bonheur possible = indépendance. Distinguer ce qui dépend de moi et ce qui n'en dépend pas.`,
+    authors: ["Spinoza"],
+    themes: ["Liberté", "Bonheur", "Raison"]
+  },
+  {
+    id: 11,
+    title: "Kant : Morale, raison et dignité humaine",
+    content: `Pour Kant, l'homme n'est pas qu'un être de plaisir mais aussi de raison, donc de morale. Il ne faut pas chercher à être heureux mais se rendre digne de l'être par la vertu.
+
+Objection à l'utilitarisme : même la morale fondée sur le plaisir selon Bentham. Quand on veut être vertueux, c'est le plaisir de l'être qu'on cherche, donc intéressé. Or la morale doit être désintéressée.
+
+Kant fonde la morale sur la raison, pas sur l'intuition ni le sentiment (trop contingents : quid des sociopathes ?). Le sentiment est intéressé : en donnant de l'argent, on veut abréger NOTRE douleur.
+
+La raison = universel, donc la maxime morale énoncée par la raison : si je fais quelque chose, je veux que tout le monde le fasse (universalisation). Si tout le monde triche, ça ne sert à rien.
+
+Raison = faculté de l'universel, instrument de la morale. Permet de lutter contre les instincts et de savoir quoi faire dans l'instant (universalisation de la maxime).
+
+Bonheur = idéal de l'imagination selon Kant, désirs contradictoires. Le bonheur peut aller à l'encontre de la morale (grimper en entreprise en faisant des crasses). Donc il faut préférer se rendre digne d'être heureux.
+
+MAIS Kant dit aussi : faut faire tout ce qui est dans notre pouvoir pour être heureux, car plus facile d'être bon quand on est heureux. Tout faire pour optimiser les conditions de la moralité. But absolu = morale. On ne peut pas s'empêcher de vouloir être heureux = 2ème but qui ne doit pas contredire le 1er.
+
+Dignité humaine : l'homme tire sa dignité de sa raison (capacité morale). On a une raison + intuition morale universelle. Si on a les moyens d'être moral (raison pour lutter contre instincts), c'est qu'on est appelés à l'être. L'essence fait le but.`,
+    authors: ["Kant"],
+    themes: ["Morale", "Raison", "Liberté", "Bonheur"]
+  },
+  {
+    id: 12,
+    title: "Descartes : Libre arbitre, raison et vérité",
+    content: `Descartes défend le libre arbitre : preuve par l'évidence qu'elle revêt pour nous. Les animaux n'ont pas ce sentiment d'être libres donc ne le sont pas. La liberté se prouve par l'expérience de l'hésitation.
+
+État d'indifférence = je ne suis déterminé par rien, indifférent entre pain au chocolat et croissant. Je suis libre car capable de choisir quand je suis indifférent, pas déterminé. L'âne de Buridan incapable de choisir entre faim et soif : il n'est pas libre car contraint par déterminismes pulsionnels.
+
+Je suis capable de choisir sans motifs déterminants. Même cause peut produire effets différents (mondes parallèles où je choisis différemment).
+
+Sur le bonheur et la vérité : "Tout le plaisir qui en revient ne peut toucher que la superficie de l'âme, laquelle sent cependant une amertume intérieure." Le bonheur fondé sur l'illusion est incomplet car notre raison, faite pour connaître la vérité, en est frustrée.
+
+Vision essentialiste du bonheur (vs phénoménaliste) : une vie réussie correspond à des valeurs objectives. Aristote : chaque organe a une fonction propre, le bonheur de l'organe = exercer conformément à ce qu'il était fait. Nous avons une raison que nous devons exercer.
+
+Bonheur purement sensoriel est incomplet. Notre raison ne peut pas ne pas vouloir connaître la vérité (curiosité des enfants). Donc bonheur inséparable de la vérité.
+
+Degrés de liberté : plus haute liberté = choisir le vrai/bien. Moins haute = illusion/méchanceté. Liberté morale > choisir son goûter. Mais cette liberté morale repose sur le libre arbitre.`,
+    authors: ["Descartes"],
+    themes: ["Liberté", "Raison", "Vérité", "Bonheur"]
+  },
+  {
+    id: 13,
+    title: "Leibniz : Les petites perceptions et l'inconscient descriptif",
+    content: `Leibniz postule un inconscient psychologique descriptif : notre cerveau capte des choses sans qu'on en ait conscience. Il parle des "petites perceptions" - notre cerveau fait le tri car si on captait tout ce serait l'enfer (forme d'autisme, saturation).
+
+Exemples de petites perceptions :
+- Dans une foule, on n'a pas conscience des conversations (brouhaha chaotique) mais soudain on entend notre prénom comme si notre cerveau veillait inconsciemment
+- Les vagues : une goutte seule, je ne l'entends pas consciemment. Mais j'entends la vague, donc j'entends chaque goutte = petite perception. On n'a pas conscience de l'apercevoir
+- Le sommeil : on se réveille d'un coup car notre inconscient nous réveille via une petite perception
+
+Distinction : petites perceptions (inconscientes) VS aperceptions (perceptions conscientes d'elles-mêmes).
+
+Réfutation du libre arbitre cartésien : Descartes fonde la liberté sur l'évidence de l'expérience de l'indifférence (choisir sans motifs déterminants). Mais pour Leibniz, quand on pense être complètement indifférent entre deux choix, une petite perception dont on n'a pas conscience penche la balance d'un côté.
+
+Le fait de dire qu'aucun motif n'est équivalent à un autre est faux. Il y a toujours des petites perceptions qui déterminent notre choix. Je suis libre car je n'ai pas conscience que je ne peux pas choisir (rejoint Spinoza).
+
+L'inconscient de Leibniz est seulement descriptif : aucune force ne s'oppose à la remontée à la conscience de certaines petites perceptions. Différence avec Freud (inconscient dynamique).`,
+    authors: ["Leibniz"],
+    themes: ["Conscience", "Inconscient", "Liberté"]
+  },
+  {
+    id: 14,
+    title: "Freud : Inconscient dynamique, pulsions et refoulement",
+    content: `Freud postule un inconscient dynamique (contrairement à Leibniz) : il y a des choses que mon inconscient refuse de laisser à la surface de ma conscience. Mouvement actif de censure.
+
+Structure de la psyché :
+- LE ÇA : réservoir de pulsions inconscientes (pulsion de vie = sexuel + autoconservation ; pulsion de mort = agressive, masochisme/sadisme)
+- LE SURMOI : intériorisation des normes sociales, règles morales (pudeur, retenue)
+- LE MOI : interface de négociation entre ça et surmoi, contact avec la réalité
+
+Le Ça et le Surmoi sont en conflit. Le Moi essaye de concilier les deux, va refouler certaines pulsions car elles ne peuvent pas toutes se satisfaire (censure).
+
+Citation : "Le Moi n'est pas maître dans sa maison."
+
+Problèmes : Surmoi trop faible = sociopathe, pervers narcissique, pas intériorisé la morale. Surmoi trop fort = personnalité obsessionnelle.
+
+Sublimation : quand le Ça ne peut pas se satisfaire directement, les pulsions refoulées ressurgissent de manière sublimée (déviée, symbolisée). Exemple : Tarentino sublime ses pulsions d'agressivité dans ses films. Ou dans les rêves.
+
+Preuves de l'inconscient selon Freud :
+1) Principe de raison suffisante : les rêves, lapsus, actes manqués ont forcément une cause. Si pas de cause physique à un symptôme physique (hystérie, paralysie), alors elle doit être psychique.
+2) Ça marche : argument empirique. Patients guérissent quand l'origine inconsciente remonte à la surface lors de la cure psychanalytique.
+
+Objection de Popper : pseudoscience = théorie qui se refuse à toute possibilité de réfutation. Tout confirme la théorie. Détester la psychanalyse ? Il y a une raison inconsciente chez vous...
+
+Stades du développement : oral (0-1an), anal (1-3ans), phallique (3-6ans, Œdipe), latence, génital (12+).`,
+    authors: ["Freud"],
+    themes: ["Inconscient", "Liberté", "Conscience"]
+  },
+  {
+    id: 15,
+    title: "Bourdieu : Déterminisme sociologique et violence symbolique",
+    content: `Bourdieu postule un inconscient sociologique : nous sommes déterminés par notre classe sociale = manière de voir le monde (politique, habillement, valeurs, morale). L'habitus.
+
+Exemples concrets :
+- Rapport à la nourriture : Midi chez des paysans = idéologie de la bonne franquette (viandes en sauce, même assiettes, impression d'abondance, franc parler). VS Riches : manger le moins possible, laisser dans l'assiette = êtres spirituels, pas des estomacs sur pattes.
+- Rapport à l'art : Photo de mains ridées. Classes populaires : réaction matérielle. Classes moyennes : allégorie de la condition humaine. Classes bourgeoises : comparaison avec d'autres photographes, analyse formelle. Passage progressif de la matière à la forme.
+
+"La Distinction" : Être distingué = se distinguer. On ne peut être distingué qu'en se distinguant des autres. Les valeurs ne sont pas objectives, changent en permanence. Ce qui motive les classes = volonté de se distinguer.
+
+"Nos goûts sont des dégoûts" : inclusifs (MA classe) et exclusifs (excluent les autres). Loi constitutive de l'inconscient sociologique.
+
+Consommateur omnivore : jeunes bourgeois écoutent du rap mais connaissent pas que ça. VS Jeunes du 93 : connaissent que le rap. Mimer la vulgarité = snobisme (être au-dessus de sa propre richesse, suffisamment riche pour jouer au pauvre).
+
+Violence symbolique : quand on a honte, on a intériorisé les valeurs de la classe dominante. Quelqu'un exerce une violence symbolique (mots qu'on ne comprend pas, références, armes inégales). Hommage que les dominés font aux dominants.
+
+But de Bourdieu : montrer que la liberté est un concept bourgeois pour entériner la hiérarchie de domination ("t'avais qu'à bosser"). Fossiliser par culpabilisation. Paralogisme : puisque nos goûts sont déterminés, alors tous les goûts sont relatifs ? Non, ne pas confondre origine et valeur.`,
+    authors: ["Bourdieu"],
+    themes: ["Inconscient", "Liberté", "Justice", "Société"]
+  },
+  {
+    id: 16,
+    title: "Sartre : Conscience réflexive et liberté",
+    content: `Sartre distingue conscience perceptive (commune aux animaux) et conscience réflexive (propre à l'homme). Réflexion = le problème se reflète dans notre esprit. Double sens : refléter et réfléchir à. La conscience réflexive = réfléchir l'univers entier dans notre tête.
+
+Exemple : timidité. Conscience perceptive : je la vis. Conscience réflexive : je la vis ET j'y réfléchis. Je me regarde en train d'être timide donc ça me pousse à réfléchir sur ma timidité. Je suis la timidité ET celui qui en a conscience = plus vraiment timide.
+
+"L'homme est ce qu'il est et n'est pas ce qu'il est." La conscience est faculté de dédoublement, on se regarde agir. Acteur ET personnage. On vit des choses et on se regarde être et vivre des choses.
+
+Donc la sincérité est un idéal impossible à atteindre pleinement. On décolle de nous-mêmes tout le temps.
+
+Cette faculté de décollement, de recul = preuve de la liberté selon Sartre. J'imagine autre chose de possible, je suis capable de critiquer, de prendre du recul, je pourrais être autrement. Conscience = liberté.
+
+Conscience morale (Kant) : lutter contre ses pulsions intéressées grâce à la loi morale. Vraie liberté pour Kant = bien vouloir (ressemble au bien moral).
+
+Lien entre liberté, conscience et responsabilité. Si inconscient = pas de liberté = pas de liberté morale = pas de responsabilité, plus de blâme, plus d'éloge. Mais on est responsable de ce qu'on fait de ce qu'on est (Freud : se connaître assez pour maîtriser son inconscient).`,
+    authors: ["Sartre"],
+    themes: ["Conscience", "Liberté"]
+  },
+  {
+    id: 17,
+    title: "Kierkegaard : Stades de l'existence, engagement et imagination",
+    content: `Kierkegaard distingue le fini (corps, société, rôle social, nécessaire) et l'infini (imagination, possible, liberté). L'être humain = tension constante entre ce qu'il est et ce qu'il aimerait être.
+
+Le but d'une vie : devenir soi = opérer une synthèse entre ce qu'on est et ce qu'on aimerait être. Pas être un PNJ soumis au fini, fataliste, résigné qui se confond avec son rôle.
+
+Deux types de désespoir :
+1) Désespoir par manque de fini : se dépersonnaliser dans l'imagination (adolescent romantique qui rêve sa vie au lieu de la vivre = ne devient personne, ne réalise rien, commence tout et ne finit rien, "je veux être pasteur...puis acteur")
+2) Désespoir par manque d'infini : le fataliste résigné qui s'enferme dans un rôle social et s'y réduit, oubliant qu'il est libre de se choisir et de changer. Écrasé par la nécessité.
+
+Trop d'infini = Don Juan / Faust : dans le fantasme permanent, ne supporte pas d'accepter un rôle social. Pense qu'il est absolument libre. Emma Bovary ne supporte pas sa vie. Don Juan = séducteur, considère le "concept" de la femme, abstraction du réel, prend les gens pour des objets. Faust = intellectuel curieux, Don Juan de la pensée, ne prend jamais position, retarde le choix.
+
+Problème : avoir plein de choix sans engagement = mauvaise conception de la liberté. Liberté virtuelle, pas réelle. La liberté n'existe que si elle est employée. Erreur : croire qu'on est libre en ne choisissant pas (indéterminé ≠ libre).
+
+Liberté = choisir qui on est. N'existe que si on est réel. Ne pas voter = fantasme de liberté.
+
+Trois stades :
+- Stade esthétique : jouisseur, ne se choisit pas
+- Stade éthique : engagement relation et métier
+- Stade religieux : on opte pour une religion
+
+Question : non pas "sommes-nous libres ?" mais "quels sont les degrés de la liberté ?" Liberté inversement proportionnelle à la raison. La foi = moins de raisons objectives, donc plus de liberté (pas déterminé par des raisons). Passion compense. Vérité subjective (foi) vs vérité objective (sciences).`,
+    authors: ["Kierkegaard"],
+    themes: ["Liberté", "Imagination", "Religion"]
+  },
+  {
+    id: 18,
+    title: "Locke : Droits naturels, liberté et propriété",
+    content: `Locke, philosophe libéral, explique que l'humain = être libre car a une raison qui lui permet de faire des choix (contrairement aux animaux). C'est son essence = être libre. Donc faut un État qui garantit ma liberté, fondement de mes droits inaliénables.
+
+Droit naturel selon Locke = droits inaliénables qu'on a tous, déduits de notre essence :
+1) Droit à la vie : la raison garantit dignité, la vie est précieuse car on est singulier chacun par notre raison
+2) Droit à la liberté : notre essence
+3) Droit à la propriété : issu de cette liberté. Si je suis libre, je suis propriétaire de mon corps. Donc ce que mon corps modifie m'appartient. Locke fonde ainsi la propriété privée.
+
+Position politique : pas pour redistribution des richesses. Les impôts = vol selon lui, comme des travaux forcés. MAIS impôts nécessaires pour police, armée, justice car protection nécessaire à notre liberté.
+
+Distinction : Liberté négative (ne pas être contraint) VS Liberté positive (ne pas être contraint ET pouvoir faire des choses).
+
+Commandements divins : l'homme a donc droit à la vie (sécurité), liberté et propriété. Mes devoirs envers les autres (respecter leur vie) sont aussi des devoirs vis-à-vis de moi-même (respecter la mienne, pas de cannibalisme consenti).
+
+Exemple : si l'État m'envoie au front, c'est paradoxalement pour me défendre contre la menace de mort de mon adversaire. En revanche, un général ne pourrait pas voler 5 centimes à un soldat.
+
+Puisque mon humanité réside en ma liberté, laquelle me rend capable de moralité, on ne peut pas m'ôter ma liberté sans m'ôter mon humanité. L'État n'a donc pas à m'imposer une vision du bonheur et les moyens d'y parvenir.
+
+Locke VS Marx.`,
+    authors: ["Locke"],
+    themes: ["Liberté", "Justice", "État", "Droit"]
+  },
+  {
+    id: 19,
+    title: "Rawls : Justice, voile d'ignorance et égalité des chances",
+    content: `Rawls développe le "libéral-égalitarisme" : essaye de concilier liberté et égalité. URSS = égalité sans liberté. États-Unis = liberté sans égalité. France = entre les deux.
+
+Pour Rawls, la liberté = avoir plusieurs choix ET avoir les moyens de se diriger de manière éclairée et rationnelle vers certains choix. Liberté civique/légale VS liberté réelle (exemple : liberté de se faire soigner, mais les pauvres ont plus de difficultés à payer).
+
+Deux principes d'une société juste :
+
+1) Les libertés de base : liberté circulation, pensée, vote. Sous prétexte d'égalité, l'État ne doit pas interférer avec ça.
+
+2) Égalité des chances : "Le voile d'ignorance" = expérience de pensée. Nos sociétés ne sont jamais d'accord car religions, cultures différentes. Comment trouver des principes de justice ?
+
+Voile d'ignorance : on oublie d'où on vient, orientation, ethnie, religion, valeurs, milieu social, intelligence = plus d'identité, plus de biais. Gâteau avec parts inégales : on ne sait pas à qui va chaque part donc on vote pour des principes les moins cruels pour les minorités. Au cas où on est dans la minorité défavorisée.
+
+Intolérance au risque : on préfère réduire les inégalités (société française hiérarchisée, État providence) VS États-Unis (beaucoup de risques, facile d'emprunter).
+
+Critique de la méritocratie : On mérite rien selon Rawls. On naît avec des talents différents qu'on n'a pas choisis. Société féodale = pouvoir lié au sang (pas de mérite). Après Révolution = pouvoir lié à l'argent (mérite-t-on la richesse de notre milieu ?). Même nos efforts, on ne les mérite pas (l'aîné fait plus d'efforts car plus responsabilisé, éducation plus rigoriste).
+
+Principe : Inégalité juste QUE si elle bénéficie aux plus défavorisés. Pas marxiste car sinon plus d'incitation à l'excellence. Exemple : primes aux médecins nécessaires mais seulement si ça bénéficie aux plus défavorisés (avoir plus de chirurgiens). Redistribution des richesses possible mais attention aux inégalités qui ne bénéficieraient pas aux plus défavorisés.`,
+    authors: ["Rawls"],
+    themes: ["Justice", "Liberté", "État", "Égalité"]
+  },
+  {
+    id: 20,
+    title: "Weber : Éthique de conviction vs éthique de responsabilité",
+    content: `Weber distingue deux types d'éthique en politique :
+
+1) Éthique de la conviction (déontologisme) : obéir à des principes moraux absolus quelles qu'en soient les conséquences. Agir selon des valeurs morales qui nous semblent absolument justes, indépendamment des résultats.
+
+2) Éthique de la responsabilité (conséquentialisme) : agir en fonction des conséquences de nos actes (exemple : "casser les œufs pour l'omelette", goulag au nom de principes moraux).
+
+Pour Weber, un homme politique ne peut pas agir seulement selon l'éthique de la conviction, car il doit tenir compte des conséquences de ses actes sur la société. Mais il ne peut pas non plus agir uniquement selon l'éthique de la responsabilité, car cela pourrait mener à des dérives totalitaires (justifier n'importe quel moyen par la fin).
+
+La question cruciale : À partir de quand la fin ne justifie plus les moyens ? Quand ceux-ci sont trop pervers ?
+
+L'homme politique doit trouver un équilibre entre ces deux éthiques. Il doit avoir des convictions morales (éthique de conviction) mais aussi considérer les conséquences réelles de ses décisions (éthique de responsabilité).
+
+Opposition : Politique VS Morale. Peut-on être moral en politique ? Faut-il sacrifier certains principes pour le bien commun ? Jusqu'où ?
+
+Rapport au totalitarisme : encadrer toutes les activités individuelles, politisation de la société, parti monopolistique, absence de différence entre État et société, monopole de l'information et des moyens de diffusion, politique qui dirige l'économie (planisme d'Hayek), toute faute = péché idéologique.
+
+Un régime totalitaire agit souvent au nom de l'éthique de responsabilité poussée à l'extrême : sacrifier des individus pour le "bien supérieur" de la société ou de l'idéologie.`,
+    authors: ["Weber"],
+    themes: ["Morale", "État", "Justice"]
+  },
+  {
+    id: 21,
+    title: "Nozick : La machine à expériences et la valeur du réel",
+    content: `Nozick propose une expérience de pensée cruciale : la machine à expériences. Cette machine envoie des stimuli pour créer le bonheur parfait. On pense que c'est réel. Question : voulez-vous y entrer ?
+
+La plupart des gens refusent. Pourquoi ? Le bonheur ne se limite pas au ressenti agréable. Plusieurs raisons :
+
+1) On veut faire des choses dans la réalité, pas juste avoir l'impression de les faire. Le fait de faire des choses réellement compte.
+
+2) Importance de l'objectivité du réel > simple impression du réel. On préfère la réalité même si elle est moins plaisante.
+
+3) Pas rêver de faire du bien, mais le faire vraiment. L'action réelle a une valeur en soi.
+
+Cela distingue deux visions du bonheur :
+
+Vision phénoménaliste (Bentham) : une vie est réussie si on a le sentiment qu'elle l'est. L'imagination/illusion peut être le moyen le plus sûr du bonheur.
+
+VS Vision essentialiste (Nozick/Descartes) : le bonheur est inséparable de la vérité. Une vie réussie est celle qui correspond à des valeurs objectives, pas seulement à un ressenti agréable.
+
+Argument : le bonheur purement sensoriel est incomplet. Notre raison, qui ne peut pas ne pas vouloir connaître la vérité, en est frustrée (amertume de Descartes). Faire des choses grandes est plus important que juste être heureux.
+
+Conséquence : la réalité est plus importante que l'agréabilité. Il y a quelque chose qui nous importe plus que le simple bonheur : faire des choses qui ont un sens réel, avoir un impact objectif sur le monde, être dans la liberté plutôt que dans l'illusion confortable.
+
+Application politique : mieux vaut qu'un peuple soit libre plutôt que l'État-providence lui donne de l'argent en le maintenant dans une dépendance. "Le meilleur des mondes" d'Huxley illustre ce danger.`,
+    authors: ["Nozick"],
+    themes: ["Bonheur", "Vérité", "Liberté"]
+  },
+  {
+    id: 22,
+    title: "Aristote : Eudémonisme, finalisme et bonheur",
+    content: `Aristote développe l'eudémonisme : le bonheur est la fin absolue de toute action humaine. Seule chose qu'on veut pour elle-même, pas comme moyen d'autre chose. On mange des chips pour être heureux, mais on n'est pas heureux pour quelque chose d'autre.
+
+Question centrale : Comment être heureux ? Si le moyen d'être heureux c'est le désir, or le désir est infini donc frustrant, comment résoudre ce problème ?
+
+Vision finaliste du réel : chaque organe a une fonction propre. Le bonheur de l'organe = exercer conformément à ce pour quoi il était fait. Exemple : les pieds servent à marcher, si on ne s'en sert pas, ils ne remplissent pas leur fonction.
+
+L'homme a une raison (contrairement aux animaux). Donc exercer sa raison = bonheur proprement humain. Comprendre quelque chose procure une joie. Pour Aristote : bonheur est ce qui s'ajoute à ce qu'on ne peut pas s'empêcher de faire = comprendre.
+
+Le méchant ne peut pas être vraiment heureux selon Aristote. Quand on fait le mal, on est tiraillé. Partie vicieuse se réjouit mais partie vertueuse a honte. Le méchant est schizophrène, tiraillement entre deux émotions contradictoires. Il y a une partie de vertu en lui qui souffre.
+
+Le méchant essaye de fuir dans une sociabilité outrée : traîner avec le plus de gens possible, s'abrutir pour ne pas voir les choses en face. Il sera avec les gens mais sur fond d'anxiété. Il se fuit, ne peut pas se regarder en face.
+
+L'homme est un animal social : ne peut pas vivre seul, être heureux seul. Robinson devient fou sur son île. Citation : "L'homme est un animal politique/social."
+
+Le bonheur combine : exercice de la raison (comprendre) + vie sociale + satisfaction raisonnable des besoins. L'eudémonisme inclut plusieurs branches : hédonisme (plaisir), intellectualisme (raison).`,
+    authors: ["Aristote"],
+    themes: ["Bonheur", "Raison", "Morale"]
+  },
+  {
+    id: 23,
+    title: "Platon : Allégorie de la caverne et accès à la vérité",
+    content: `L'allégorie de la caverne illustre le rapport entre apparence et vérité. Des hommes enchaînés voient des ombres projetées sur un mur = discours politiques des sophistes, illusions du monde sensible. Les marionnettes = monde matériel qu'on crée. Les ombres = fausses représentations.
+
+Exemple : le concept d'ordinateur est plus vrai que l'ordinateur qu'on voit (qui n'en est qu'un exemple particulier, imparfait). Les Idées (Formes) sont plus réelles que leurs manifestations sensibles.
+
+On pense que les ombres sont vraies, donc on ne va pas se détacher. Notre imagination est trompeuse car on ne sait jamais qu'on imagine. Elle ne s'assume pas, fait croire qu'elle n'est pas une imagination = caractère pervers de l'imagination.
+
+Le philosophe qui se libère : il sort de la caverne, voit le soleil (la vérité, le Bien). Mais il souffre, il est seul, personne ne le comprend. Quand il redescend pour libérer les autres, ils ne le croient pas, veulent le tuer. Référence à Socrate qui va mourir.
+
+Pas agréable, la vérité. On se sent seul. Nécessite un effort. Mais l'homme a une raison donc est fait pour comprendre. Compréhension supérieure à tout, même au bonheur immédiat.
+
+Les formes intelligibles (le monde des Idées) sont éternelles, parfaites. Le monde sensible n'en est qu'un reflet imparfait, changeant. Accéder à la vérité = sortir du sensible pour accéder à l'intelligible par la raison.
+
+Le philosophe a le devoir de redescendre dans la caverne pour gouverner justement, même si c'est moins agréable que la contemplation des Idées. Justice de l'âme = justice de la cité : raison gouverne, volonté applique, désirs obéissent.`,
+    authors: ["Platon", "Socrate"],
+    themes: ["Vérité", "Raison", "Justice", "État"]
+  },
+  {
+    id: 24,
+    title: "Kant : Le beau, l'agréable et le vrai",
+    content: `Kant établit des distinctions fondamentales :
+
+L'AGRÉABLE (gastronomie) : uniquement fondé sur la SENSIBILITÉ. Purement sensoriel, purement subjectif. Des goûts et des couleurs on ne discute pas. On n'argumente pas pour des épinards.
+
+LE VRAI (science) : uniquement fondé sur l'ENTENDEMENT. Universel, objectif, met tout le monde d'accord.
+
+LE BEAU (art) : convoque SENSIBILITÉ + ENTENDEMENT. Caractère ambigu de l'art. C'est agréable mais pas seulement. Ça fait aussi réfléchir, plaisir intellectuel.
+
+Preuve : on essaye de convaincre quelqu'un pour qu'il aime aussi un film (on argumente), mais pas pour des épinards. Le beau a une dimension universelle sans concept déterminant.
+
+Concept scientifique = déterminant : j'ai le concept en tête (définition de la fleur) puis je l'applique à un objet réel.
+
+VS Concept artistique = réfléchissant : j'ai d'abord la chose réelle puis je dis que c'est beau ou non. La chose réfléchit la beauté. On ne peut pas avoir de concept a priori du beau qu'on appliquerait mécaniquement aux œuvres.
+
+"Le beau = ce qui est universellement beau sans concept." Le bonheur absolu de l'œuvre d'art = sensibilité et entendement sont réconciliés. Le corps et l'esprit s'harmonisent.
+
+La beauté relève de ma perception (subjective) MAIS puisqu'il y a de l'entendement (plaisir intellectuel), on peut débattre avec des arguments intellectuels. Plus facile de montrer la supériorité de Bergman face à une pub que choucroute vs épinard.
+
+Que le plaisir esthétique soit subjectif ne signifie pas que tout se vaut. On peut avoir des arguments intellectuels en faveur d'une œuvre.
+
+Danger de l'académisme : définition objectiviste trop rigide de la beauté qui refuse l'art original. Bataille de Hernani (Victor Hugo), peinture impressionniste = refusés par l'académie. Si tout est beau, rien ne l'est. Mais si on fige les critères, on tue l'originalité qui définit l'art.`,
+    authors: ["Kant"],
+    themes: ["Art", "Raison", "Vérité"]
+  },
+  {
+    id: 25,
+    title: "Ricoeur : Utopie, idéologie et imagination politique",
+    content: `Ricoeur distingue deux fonctions de l'imagination en politique :
+
+UTOPIE : imaginer un monde meilleur pour changer celui-ci. Permet de remettre en question l'ordre établi, de penser le changement social. Fonction critique et créatrice. Exemple : imaginer une société plus juste, plus égalitaire.
+
+IDÉOLOGIE : se regrouper autour d'une représentation du monde garante de stabilité sociale. Fonction de cohésion sociale, d'identification collective. Donne du sens à l'ordre social existant.
+
+Danger de l'excès d'utopie : anarchie ou totalitarisme quand on veut plaquer brutalement l'utopie sur le réel. Exemples : goulag, révolutions qui tournent mal. Il ne faut pas essayer de brutaliser le réel, de rentrer le réel de force dans l'utopie. "Le meilleur des mondes" de Huxley.
+
+Danger de l'excès d'idéologie : rigidité, conformisme, entériner certaines injustices. Accepter l'ordre établi sans le remettre en question. Fossiliser les hiérarchies de domination.
+
+Équilibre nécessaire : l'une doit toujours contrebalancer l'autre. Trop d'imagination sans ancrage dans le réel = chaos. Mais l'imagination est utile pour imaginer le changement possible et souhaitable.
+
+L'imagination ne doit pas supplanter le réel mais l'enrichir. Elle est une passerelle vers le réel, pour mieux le voir. Expériences de pensée scientifiques (Galilée : espace vide) et philosophiques (Nozick : machine à expériences, allégorie de la caverne).
+
+L'imagination dépend de l'usage : elle peut être moralement et épistémologiquement bonne (imaginer un monde meilleur, expériences de pensée) ou mauvaise (se perdre dans le fantasme, nier le réel).
+
+L'utopie concrète (Ernst Bloch) : imagination qui se fonde sur les possibilités réelles inscrites dans le présent, pas utopie déconnectée du réel.`,
+    authors: ["Ricoeur"],
+    themes: ["Imagination", "État", "Justice"]
+  },
+  {
+    id: 26,
+    title: "Pascal : Le divertissement et la condition humaine",
+    content: `Pascal analyse le divertissement comme fuite de soi-même et de sa condition. L'homme ne supporte pas de rester seul dans sa chambre car confronté à sa misère, à son vide intérieur, aux questions existentielles.
+
+"Le roi sans divertissement" : même un roi, qui peut satisfaire tous ses désirs, s'ennuie. Un état où les désirs sont tous satisfaits n'est pas souhaitable car on n'a plus le divertissement du désir, plus de but, plus de quête.
+
+Le divertissement = fuir son ignorance, arrêter de se poser les bonnes questions. Perpétuel mouvement pour ne pas penser à sa condition. Agir pour ne pas penser. "Tout le malheur des hommes vient d'une seule chose, qui est de ne savoir pas demeurer en repos dans une chambre."
+
+L'homme est obsédé par des choses futiles (vanité) mais indifférent aux questions existentielles importantes. Pourquoi ? Le divertissement nous empêche de nous confronter à notre finitude, à la mort, au sens de notre existence.
+
+Exemples de divertissement : la chasse (on ne veut pas vraiment le lièvre, on veut la distraction de la chasse), le jeu, le travail obsessionnel, la sociabilité excessive. Ce qui compte n'est pas l'objet obtenu mais l'occupation elle-même.
+
+Pour Pascal, le vrai bonheur n'est pas dans le divertissement mais dans la confrontation avec la vérité, même douloureuse. Arrêter la fuite perpétuelle, accepter de se poser les bonnes questions. Chercher la vérité par la raison ET par le cœur.
+
+Le bonheur selon Pascal : rétablir le lien avec Dieu qu'on avait avant le péché originel. Accepter sa condition mais la transcender par la foi. Le désir d'infini en nous ne peut être rempli que par l'infini = Dieu. Sinon on reste dans une béance, un vide que rien de fini ne peut combler.
+
+"Tu nous as fait pour toi Seigneur et notre cœur est sans repos tant qu'il ne demeure en toi" (Saint-Augustin cité dans cette perspective pascalienne).`,
+    authors: ["Pascal"],
+    themes: ["Bonheur", "Conscience", "Religion", "Vérité"]
+  },
+  {
+    id: 27,
+    title: "Keynes vs Friedman : Interventionnisme et libéralisme économique",
+    content: `KEYNES (interventionnisme étatique) :
+Théorie : dans période de chômage, cercle vicieux. Chômage → baisse de consommation → moins de production → moins de travail → plus de chômage.
+
+Solution : l'État doit intervenir pour relancer la demande. Redistribuer équitablement les richesses pour que les gens souffrent le moins possible. La demande produit la production. Faut augmenter la demande.
+
+Politique : État met l'économie sous perfusion, distribue de l'argent pour que les ménages consomment. New Deal de Roosevelt, État-providence. L'État doit se charger de l'économie. Bonheur > liberté.
+
+Problèmes :
+1) Dévaluation → inflation
+2) Trauma : les gens ne dépensent pas, font des économies au cas où la crise revient → pas de relance de la demande
+3) Chômage + inflation = stagflation (années 70)
+
+Solution d'urgence mais peut marcher dans circonstances où on est obligé de consommer.
+
+FRIEDMAN (libéralisme économique) :
+Après crises pétrolières années 70 et échec de Keynes : tournant capitaliste avec Thatcher et Reagan. Liberté > bonheur. Arrêt de l'intervention de l'État. On n'essaye pas de sauver tout le monde.
+
+HAYEK : "La route de la servitude"
+Veut montrer les limites de l'interventionnisme. Si l'État doit garantir notre liberté plutôt que notre bonheur, il doit en revanche nous offrir la possibilité de poursuivre ce dernier. D'abord liberté, ensuite bonheur, mais faire en sorte que vie décente possible.
+
+Planisme = politique qui dirige l'économie. Risque totalitaire selon Hayek : État contrôle tout, aucune liberté économique, mène à la servitude.
+
+Question : L'État doit-il s'occuper de mon bonheur ? Réponse nuancée : non directement (liberticide) mais doit créer conditions matérielles. Conditions nécessaires mais pas suffisantes (Rawls). Le bonheur est moins un objet qu'une conséquence de trouver une signification, des relations qui ont du sens.`,
+    authors: ["Keynes", "Friedman", "Hayek"],
+    themes: ["État", "Liberté", "Justice", "Bonheur"]
+  },
+  {
+    id: 28,
+    title: "Bachelard : Objectivité scientifique et rupture épistémologique",
+    content: `Bachelard montre que la prétendue objectivité des faits est fausse. Les faits sont nécessairement le fruit d'une interprétation car un sujet regarde un objet.
+
+Exemple : Lois d'Archimède. Si on se fonde sur la perception brute des faits, vision erronée : la pesanteur de l'objet est proportionnelle à sa chute. Or ce n'est pas ça (résistance de l'air, etc.).
+
+Quand on regarde le réel sans hypothèse, ça nous induit en erreur. Il faut s'éloigner de la perception brute pour étudier correctement un fait. Rupture épistémologique nécessaire : rompre avec l'évidence première, le sens commun.
+
+La science se construit contre l'expérience première, contre l'évidence sensible. L'obstacle épistémologique principal = notre propre perception immédiate qui nous trompe.
+
+Exemples d'obstacles épistémologiques :
+- L'expérience première (croire ce qu'on voit immédiatement)
+- La connaissance générale (croire qu'on sait déjà)
+- L'obstacle verbal (les mots qui cachent la réalité)
+- L'obstacle substantialiste (chercher une "substance" derrière tout)
+
+La formation de l'esprit scientifique nécessite de surmonter ces obstacles. Le scientifique doit constamment se méfier de sa propre perception, de ses préjugés, de l'évidence.
+
+Pas sur l'objectivité du fait mais sur l'hypothèse face au fait. Le scientifique émet une hypothèse (rationalisme) qu'il teste sur les faits (empirisme). Les faits ne parlent pas d'eux-mêmes, c'est le scientifique qui les interroge.
+
+La science = dialogue entre théorie et expérience. On a besoin des faits pour tester notre hypothèse, mais les faits seuls ne suffisent pas. C'est la raison humaine qui construit les théories scientifiques.
+
+Science = cimetière de théories mortes remplacées par d'autres théories meilleures. Vérité scientifique = vérité probabiliste (milieu entre relativisme et objectivisme absolu).`,
+    authors: ["Bachelard"],
+    themes: ["Science", "Vérité", "Raison"]
+  },
+  {
+    id: 29,
+    title: "Durkheim : Faits sociaux et méthode sociologique",
+    content: `Durkheim fonde la sociologie comme science en définissant les faits sociaux : manières d'agir, de penser et de sentir extérieures à l'individu et douées d'un pouvoir de coercition.
+
+Caractéristiques du fait social :
+1) Extériorité : existe indépendamment des individus
+2) Contrainte : s'impose aux individus (sanctions si on ne suit pas)
+3) Généralité : partagé par l'ensemble d'un groupe
+
+Exemples : langage, monnaie, lois, modes vestimentaires, systèmes éducatifs.
+
+Méthode sociologique : "Traiter les faits sociaux comme des choses." Les étudier objectivement, de l'extérieur, comme on étudierait des objets naturels. Éviter les prénotions (idées préconçues).
+
+Différentes sciences et leur rapport aux faits :
+- Biologie : à échelle humaine, forme d'objectivité possible, sans trop de biais théoriques
+- Physique théorique : moins certaine, pas à l'échelle humaine (particules élémentaires)
+
+Même en biologie, les faits se font sur les hypothèses. L'objectivité du fait n'est pas absolue car on peut en tirer des hypothèses différentes. L'hypothèse qui gagne est celle confirmée par protocole expérimental.
+
+Les faits restent objectifs (on ne délire pas) mais ne sont pas très importants car on peut en tirer des hypothèses différentes. C'est la raison humaine qui crée les hypothèses, pas le fait seul.
+
+Science = ni relativisme absolu ni objectivisme absolu. Vérité probabiliste. La science trouve pas des vérités absolues mais explique plus ou moins de phénomènes.
+
+Les faits plus importants en bio, moins certains en physique théorique. Plusieurs modélisations possibles des mêmes faits, pas de calque fidèle des faits. Imaginer les rouages invisibles = explication des faits (comme horloge).
+
+Support de la science = raison humaine, pas uniquement les faits. Quel est le degré d'objectivité des sciences ? Entre relativisme et objectivisme.`,
+    authors: ["Durkheim"],
+    themes: ["Science", "Vérité", "Société"]
+  },
+  {
+    id: 30,
+    title: "Simone Weil : Responsabilité et connaissance de soi",
+    content: `Simone Weil s'oppose à l'idée d'un inconscient qui déresponsabiliserait. Pour elle, on est responsable de ce qu'on fait de ce qu'on est.
+
+L'inconscient = nom qu'on donne à notre paresse et lâcheté, au refus de se connaître. Si on fait un effort d'introspection suffisant, on peut se connaître. L'inconscient n'a de partialité que celle qu'on veut bien lui accorder.
+
+On n'est pas obligés d'être déterminés par notre inconscient. On peut faire l'effort d'être objectif avec soi-même, de se regarder honnêtement. Cela demande du courage, de l'exigence morale.
+
+Nos "déterminismes" sont souvent des excuses commodes pour ne pas assumer nos responsabilités. "Je ne peux pas m'en empêcher" / "C'est plus fort que moi" = refus de l'effort moral nécessaire.
+
+La connaissance de soi est un travail exigeant mais possible. Demande : lucidité (voir clair en soi), honnêteté (ne pas se mentir), courage (affronter ce qu'on découvre).
+
+Freud lui-même dit qu'on est responsable de se connaître assez pour maîtriser ses pulsions inconscientes. La cure psychanalytique = rendre conscient l'inconscient pour reprendre le contrôle.
+
+Pour Weil, nous ne sommes pas de simples jouets de forces inconscientes qui nous dépasseraient totalement. Nous avons la capacité de nous connaître et donc de nous transformer.
+
+Lien avec la liberté : si on accepte d'être totalement déterminés par un inconscient inaccessible, on renonce à notre liberté et à notre responsabilité morale. Or l'homme est un être moral, capable de choix.
+
+L'attention : concept central chez Weil. Porter attention = forme la plus haute de la conscience. Attention à soi-même (introspection), attention à autrui (compassion), attention au monde (lucidité). L'attention est un effort, une ascèse, mais libératrice.
+
+Conclusion : on ne peut pas tout mettre sur le dos de l'inconscient. Une part de liberté et de responsabilité demeure. Faire l'effort de se connaître = condition de la liberté et de la moralité.`,
+    authors: ["Simone Weil"],
+    themes: ["Conscience", "Liberté", "Morale", "Responsabilité"]
+  },
+];
+
+/* ===========================================================
+   =============== LOGIQUE JS ================================
+   =========================================================== */
+
+// Charger les cours depuis localStorage ou utiliser initialCourses
+let courses = [];
+try {
+  const saved = localStorage.getItem('philosophyCourses');
+  courses = saved ? JSON.parse(saved) : [...initialCourses];
+} catch (e) {
+  console.error('Erreur chargement:', e);
+  courses = [...initialCourses];
+}
+
+let searchTags = [];
+let newAuthors = [];
+let newThemes = [];
+let editingId = null;
+
+// Fonction pour sauvegarder dans localStorage
+function saveCourses() {
+  try {
+    localStorage.setItem('philosophyCourses', JSON.stringify(courses));
+  } catch (e) {
+    console.error('Erreur sauvegarde:', e);
+  }
+}
+
+// ELEMENTS
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const searchTagsDiv = document.getElementById("searchTags");
+const coursesDiv = document.getElementById("courses");
+const resultsCount = document.getElementById("resultsCount");
+
+const addForm = document.getElementById("addForm");
+const toggleAdd = document.getElementById("toggleAdd");
+const cancelAdd = document.getElementById("cancelAdd");
+
+const newTitle = document.getElementById("newTitle");
+const newContent = document.getElementById("newContent");
+
+const newAuthor = document.getElementById("newAuthor");
+const newTheme = document.getElementById("newTheme");
+const addAuthor = document.getElementById("addAuthor");
+const addTheme = document.getElementById("addTheme");
+
+const authorsList = document.getElementById("authorsList");
+const themesList = document.getElementById("themesList");
+
+const saveCourse = document.getElementById("saveCourse");
+
+
+// ====== AFFICHAGE DES COURS ======
+
+function renderCourses() {
+  const filtered = courses.filter(course =>
+    searchTags.length === 0 ||
+    searchTags.every(tag =>
+      course.authors.some(a => a.toLowerCase() === tag.toLowerCase()) ||
+      course.themes.some(t => t.toLowerCase() === tag.toLowerCase())
+    )
+  );
+
+  resultsCount.innerText = filtered.length + " résultat(s)";
+
+  coursesDiv.innerHTML = filtered.map(c => `
+    <div class="course-card">
+      <div class="course-actions">
+        <button class="btn-icon" onclick="editCourse(${c.id})">✏️ Éditer</button>
+        <button class="btn-icon delete" onclick="deleteCourse(${c.id})">🗑️</button>
+      </div>
+      
+      <h3>${c.title}</h3>
+
+      <div class="badges">
+        ${c.authors.map(a => `<span class="tag small">${a}</span>`).join("")}
+      </div>
+
+      <div class="badges">
+        ${c.themes.map(t => `<span class="tag small">${t}</span>`).join("")}
+      </div>
+
+      <p>${c.content.replace(/\n/g, "<br>")}</p>
+    </div>
+  `).join("");
+}
+
+
+// ====== TAGS DE RECHERCHE ======
+
+function renderSearchTags() {
+  searchTagsDiv.innerHTML = searchTags
+    .map(tag => `
+      <span class="tag">${tag}
+        <span class="remove" onclick="removeTag('${tag}')">×</span>
+      </span>
+    `).join("");
+}
+
+function removeTag(tag) {
+  searchTags = searchTags.filter(t => t !== tag);
+  renderSearchTags();
+  renderCourses();
+}
+
+searchBtn.onclick = () => {
+  const val = searchInput.value.trim();
+  if (val && !searchTags.includes(val)) {
+    searchTags.push(val);
+    searchInput.value = "";
+    renderSearchTags();
+    renderCourses();
+  }
+};
+
+
+// ====== FORMULAIRE ======
+
+toggleAdd.onclick = () => {
+  editingId = null;
+  newTitle.value = "";
+  newContent.value = "";
+  newAuthors = [];
+  newThemes = [];
+  authorsList.innerHTML = "";
+  themesList.innerHTML = "";
+  saveCourse.textContent = "Enregistrer";
+  addForm.classList.toggle("hidden");
+};
+
+cancelAdd.onclick = () => {
+  editingId = null;
+  addForm.classList.add("hidden");
+};
+
+
+// ====== AUTEURS ======
+
+addAuthor.onclick = () => {
+  const val = newAuthor.value.trim();
+  if (val && !newAuthors.includes(val)) {
+    newAuthors.push(val);
+    newAuthor.value = "";
+    authorsList.innerHTML = newAuthors.map(a => `
+      <span class="tag small">${a} <span class="remove" onclick="removeAuthor('${a}')">×</span></span>
+    `).join("");
+  }
+};
+
+function removeAuthor(a) {
+  newAuthors = newAuthors.filter(x => x !== a);
+  authorsList.innerHTML = newAuthors.map(x => `<span class="tag small">${x}</span>`).join("");
+}
+
+
+// ====== THEMES ======
+
+addTheme.onclick = () => {
+  const val = newTheme.value.trim();
+  if (val && !newThemes.includes(val)) {
+    newThemes.push(val);
+    newTheme.value = "";
+    themesList.innerHTML = newThemes.map(t => `
+      <span class="tag small">${t} <span class="remove" onclick="removeTheme('${t}')">×</span></span>
+    `).join("");
+  }
+};
+
+function removeTheme(t) {
+  newThemes = newThemes.filter(x => x !== t);
+  themesList.innerHTML = newThemes.map(x => `<span class="tag small">${x}</span>`).join("");
+}
+
+
+// ====== ENREGISTRER COURS ======
+
+saveCourse.onclick = () => {
+  const title = newTitle.value.trim();
+  const content = newContent.value.trim();
+
+  if (!title || !content) return alert("Il manque un titre ou un contenu.");
+
+  if (editingId) {
+    // Mode édition
+    const index = courses.findIndex(c => c.id === editingId);
+    if (index !== -1) {
+      courses[index] = {
+        ...courses[index],
+        title,
+        content,
+        authors: [...newAuthors],
+        themes: [...newThemes]
+      };
+    }
+    editingId = null;
+  } else {
+    // Mode création
+    courses.push({
+      id: Date.now(),
+      title,
+      content,
+      authors: [...newAuthors],
+      themes: [...newThemes]
+    });
+  }
+
+  newAuthors = [];
+  newThemes = [];
+
+  newTitle.value = "";
+  newContent.value = "";
+  authorsList.innerHTML = "";
+  themesList.innerHTML = "";
+
+  addForm.classList.add("hidden");
+  saveCourses();
+  renderCourses();
+};
+
+// ====== ÉDITER COURS ======
+
+function editCourse(id) {
+  const course = courses.find(c => c.id === id);
+  if (!course) return;
+
+  editingId = id;
+  newTitle.value = course.title;
+  newContent.value = course.content;
+  newAuthors = [...course.authors];
+  newThemes = [...course.themes];
+
+  authorsList.innerHTML = newAuthors.map(a => `
+    <span class="tag small">${a} <span class="remove" onclick="removeAuthor('${a}')">×</span></span>
+  `).join("");
+
+  themesList.innerHTML = newThemes.map(t => `
+    <span class="tag small">${t} <span class="remove" onclick="removeTheme('${t}')">×</span></span>
+  `).join("");
+
+  saveCourse.textContent = "Mettre à jour";
+  addForm.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ====== SUPPRIMER COURS ======
+
+function deleteCourse(id) {
+  if (!confirm("Voulez-vous vraiment supprimer ce cours ?")) return;
+  
+  courses = courses.filter(c => c.id !== id);
+  saveCourses();
+  renderCourses();
+}
+
+
+// PREMIER AFFICHAGE
+renderCourses();
+
+</script>
+
+</body>
+</html>
