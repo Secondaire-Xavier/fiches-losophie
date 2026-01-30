@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestionnaire de Cours de Philosophie</title>
 
 <style>
-/* ====== STYLE ====== */
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
@@ -31,15 +31,199 @@ body {
 .header h1 {
   margin-top: 0;
   color: #8B4000;
+  text-align: center;
 }
 
-.subtitle {
-  color: #555;
+/* Section recherche améliorée */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  pointer-events: none;
+  color: #999;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 2px solid #d7a96b;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #cc7a00;
+  box-shadow: 0 0 0 3px rgba(204, 122, 0, 0.1);
+}
+
+.search-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #cc7a00 0%, #b36900 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.search-button:hover {
+  background: linear-gradient(135deg, #b36900 0%, #9a5800 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(179, 105, 0, 0.3);
+}
+
+.add-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #228b22 0%, #1a6b1a 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.add-button:hover {
+  background: linear-gradient(135deg, #1a6b1a 0%, #145214 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 139, 34, 0.3);
+}
+
+.filters-section {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  border: 1px solid #f0f0f0;
+  width: fit-content;
+  vertical-align: middle;
+}
+
+.filters-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  background-color: #d2d2d2;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.filter-checkbox:hover {
+  background-color: #c0c0c0;
+}
+
+.filter-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-custom {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #d7a96b;
+  border-radius: 3px;
+  background: white;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-checkbox input[type="checkbox"]:checked + .checkbox-custom {
+  background: #cc7a00;
+  border-color: #cc7a00;
+}
+
+.filter-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.filter-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.clear-button {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.clear-button:hover {
+  background: linear-gradient(135deg, #d8d8d8 0%, #d2d2d2 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 229, 229, 0.3);
+}
+
+.results-info {
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.results-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .row2 {
@@ -51,12 +235,39 @@ body {
 .full {
   width: 100%;
   padding: 8px;
+  box-sizing: border-box;
 }
 
-input, textarea {
+#addForm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+#addForm-content {
+  background: white;
+  border-radius: 8px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding: 0 20px 20px 20px;
+}
+
+input, textarea, select {
   border: 1px solid #d7a96b;
   padding: 8px;
   border-radius: 5px;
+  font-family: inherit;
 }
 
 button {
@@ -66,6 +277,7 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 button:hover {
@@ -78,8 +290,11 @@ button.green:hover { background: #186118; }
 button.grey { background: #777; }
 button.grey:hover { background: #555; }
 
-button.red { background: #dc3545; color: white; }
+button.red { background: #dc3545; }
 button.red:hover { background: #c82333; }
+
+button.blue { background: #007bff; }
+button.blue:hover { background: #0056b3; }
 
 .hidden { display: none; }
 
@@ -91,19 +306,44 @@ button.red:hover { background: #c82333; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 13px;
+}
+
+.tag:hover {
+  background: #ffd280;
+}
+
+.tag.active {
+  background: #ff9800;
+  color: white;
 }
 
 .tag .remove {
   cursor: pointer;
   color: #a00;
+  font-weight: bold;
 }
 
 .tag-container {
   margin-top: 10px;
 }
 
-.small .tag {
-  background: #d7e7ff;
+.tag.small.author {
+  background: #facbcb;
+}
+
+.tag.small.author:hover {
+  background: #f4a5ad;
+}
+
+.tag.small.theme {
+  background: #bfe3f1;
+}
+
+.tag.small.theme:hover {
+  background: #9fd0e7;
 }
 
 .course-card {
@@ -112,7 +352,7 @@ button.red:hover { background: #c82333; }
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s;
   position: relative;
 }
 
@@ -121,10 +361,22 @@ button.red:hover { background: #c82333; }
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.course-card h3 {
+.course-card.highlight {
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.5) !important;
+}
+
+.course-card h2 {
   margin: 0 0 10px;
   color: #8B4000;
   padding-right: 140px;
+  font-size: 28px;
+}
+
+.course-id {
+  font-size: 11px;
+  color: #999;
+  font-family: monospace;
+  margin-right: 10px;
 }
 
 .course-actions {
@@ -165,43 +417,473 @@ button.red:hover { background: #c82333; }
   margin-bottom: 10px;
 }
 
+.course-type {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.course-type.general {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.course-type.detailed {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.course-type.plan {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.course-type.image {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+/* Contenu tronqué */
+.course-content {
+  position: relative;
+}
+
+.course-content.truncated {
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.course-content.truncated::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, white);
+  pointer-events: none;
+}
+
+.expand-btn {
+  margin-top: 10px;
+  background: #f0f0f0;
+  color: #333;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.expand-btn:hover {
+  background: #e0e0e0;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d7a96b;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.suggestions-dropdown.active {
+  display: block;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+  background: #fff3e6;
+}
+
+.image-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.image-container img {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.links-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.links-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #666;
+  display: inline-block;
+}
+
+.link-item {
+  display: inline-block;
+  background: #fff3e0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 3px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.link-item:hover {
+  background: #ffe0b2;
+}
+
+.link-type {
+  font-size: 13px;
+  color: #666;
+  margin-right: 5px;
+}
+
+.editor-toolbar {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 5px 5px 0 0;
+  margin-top: 10px;
+}
+
+.editor-toolbar button {
+  padding: 5px 10px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+textarea.with-toolbar {
+  border-radius: 0 0 5px 5px;
+  margin-top: 0;
+}
+
+.link-input-group {
+  margin-top: 15px;
+}
+
+.link-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.link-input-row select {
+  padding: 6px;
+  border: 1px solid #d7a96b;
+  border-radius: 5px;
+  flex: 1;
+}
+
+.link-input-row input {
+  flex: 0 0 100px;
+}
+
+.added-links {
+  margin-top: 10px;
+}
+
+.added-link {
+  background: #fff3e0;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.inline-link {
+  background: #fff9c4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #f57c00;
+  font-weight: 500;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  background: #fff176;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Modal pour afficher une fiche */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  min-width: 400px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 15px 20px;
+  border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-close {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.modal-close:hover {
+  background: #c82333;
+}
+
+/* Modal de prévisualisation */
+.preview-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-top: 2px solid #f0f0f0;
+  background: #f9f9f9;
+  position: sticky;
+  bottom: 0;
+}
+
+/* Citations démarquées */
+.citation-block {
+  background: linear-gradient(to right, #fff9e6 0%, #fff9e6 4px, #fffbf0 4px);
+  border-left: 4px solid #f39c12;
+  padding: 15px 15px 15px 20px;
+  margin: 15px 0;
+  font-style: italic;
+  border-radius: 0 5px 5px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.citation-block::before {
+  content: '"';
+  font-size: 40px;
+  color: #f39c12;
+  position: absolute;
+  margin-left: -15px;
+  margin-top: -10px;
+  opacity: 0.3;
+}
+
+/* Éditeur avec preview */
+.editor-wrapper {
+  position: relative;
+}
+
+.editor-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  padding: 8px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+  overflow: hidden;
+}
+
+.editor-preview span {
+  color: #333;
+}
+
+.editor-preview .md-bold {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.editor-preview .md-italic {
+  font-style: italic;
+  color: #34495e;
+}
+
+.editor-preview .md-underline {
+  text-decoration: underline;
+  color: #7f8c8d;
+}
+
+.editor-preview .md-citation {
+  background: #fff9e6;
+  color: #f39c12;
+  font-style: italic;
+}
+
+textarea.with-preview {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  color: #333;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-  <!-- En-tête -->
   <div class="card header">
-    <h1>Gestionnaire de Cours de Philosophie</h1>
-    <p class="subtitle">Recherchez par auteur ou thème</p>
+    <h1>📚 Gestionnaire de Cours de Philosophie</h1>
   </div>
 
-  <!-- Recherche -->
   <div class="card">
-    <div class="row">
-      <input id="searchInput" type="text" placeholder="Entrez un auteur ou thème...">
-      <button id="searchBtn">Rechercher</button>
-      <button id="toggleAdd">Ajouter</button>
+    <!-- Barre de recherche principale -->
+    <div class="search-bar">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="Rechercher par auteur, thème ou titre...">
+      </div>
+      <button id="searchBtn" class="search-button">Rechercher</button>
+      <button id="clearFilters" class="clear-button">✖️ Réinitialiser</button>
+      <button id="toggleAdd" class="add-button">➕ Ajouter une fiche</button>
+    </div>
+    
+    <!-- Filtres par type -->
+    <div style="display: flex; justify-content: center;">
+    <div class="filters-section">
+      <div class="filters-label">
+        <strong>Filtrer par type:</strong>
+      </div>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterDetailed" checked>
+          <span class="checkbox-custom"></span>
+          <span class="filter-label">📄 Détaillée</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterGeneral" checked>
+          <span class="checkbox-custom"></span>
+          <span class="filter-label">📋 Généraliste</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterPlan" checked>
+          <span class="checkbox-custom"></span>
+          <span class="filter-label">📝 Plan</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterImage" checked>
+          <span class="checkbox-custom"></span>
+          <span class="filter-label">🖼️ Image</span>
+        </label>
+    </div>
+    </div>
+    
+    <!-- Tags de recherche actifs -->
+    <div id="searchTags" class="tag-container"></div>
+
+    <!-- Compteur de résultats -->
+    <div class="results-info">
+      <p id="resultsCount"></p>
+    </div>
+  </div>
+
+  <div id="addForm-overlay" style="display: none;">
+    <div id="addForm-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h2 id="formTitle">Ajouter une fiche</h2>
+        <div>
+          <button id="previewCourse" class="blue">👁️ Prévisualiser</button>
+          <button id="cancelAdd" class="grey">✖️ Annuler</button>
+        </div>
+    </div>
+    
+
+    <div style="margin-bottom: 15px; margin-top: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: bold;">Type de fiche:</label>
+      <select id="courseType" class="full">
+        <option value="detailed">📄 Fiche détaillée (analyse approfondie)</option>
+        <option value="general">📋 Fiche généraliste (vue d'ensemble)</option>
+        <option value="plan">📝 Plan détaillé (structure argumentative)</option>
+        <option value="image">🖼️ Image (schéma, carte mentale)</option>
+      </select>
     </div>
 
-    <div id="searchTags" class="tag-container"></div>
-  </div>
-
-  <!-- Formulaire d'ajout -->
-  <div id="addForm" class="card hidden">
-    <h2>Ajouter un morceau de cours</h2>
+    <div id="imageUploadSection" class="hidden" style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: bold;">Image:</label>
+      <input type="file" id="imageInput" accept="image/*" class="full">
+      <div id="imagePreview" style="margin-top: 10px;"></div>
+    </div>
 
     <input id="newTitle" type="text" placeholder="Titre du cours" class="full">
 
-    <textarea id="newContent" placeholder="Contenu du cours" rows="6" class="full"></textarea>
+    <div class="editor-toolbar">
+      <button type="button" id="boldBtn" title="Gras"><strong>B</strong></button>
+      <button type="button" id="italicBtn" title="Italique"><em>I</em></button>
+      <button type="button" id="underlineBtn" title="Souligné"><u>U</u></button>
+      <button type="button" id="h3Btn" title="Titre">H3</button>
+      <button type="button" id="citationBtn" title="Marquer comme citation">💬 Citation</button>
+      <span style="border-left: 2px solid #ccc; height: 20px; margin: 0 8px;"></span>
+      <button type="button" id="insertLinkBtn">🔗 Lien</button>
+      <span class="help-text">** gras ** | * italique * | __ souligné __ | <<< citation >>> | [lien inter-fiches]</span>
+    </div>
+    <div class="editor-wrapper">
+      <div id="editorPreview" class="editor-preview"></div>
+      <textarea id="newContent" placeholder="Contenu" rows="8" class="full with-toolbar with-preview"></textarea>
+    </div>
 
     <div class="row2">
       <div>
         <h4>Auteurs</h4>
         <div class="row">
-          <input id="newAuthor" type="text" placeholder="Auteur">
-          <button id="addAuthor">+</button>
+          <div style="position: relative; flex: 1;">
+            <input id="newAuthor" type="text" placeholder="Auteur" style="width: 100%;" autocomplete="off">
+            <div id="authorSuggestions" class="suggestions-dropdown"></div>
+          </div>
+          <button type="button" id="addAuthor">+</button>
         </div>
         <div id="authorsList" class="tag-container small"></div>
       </div>
@@ -209,690 +891,122 @@ button.red:hover { background: #c82333; }
       <div>
         <h4>Thèmes</h4>
         <div class="row">
-          <input id="newTheme" type="text" placeholder="Thème">
-          <button id="addTheme">+</button>
+          <div style="position: relative; flex: 1;">
+            <input id="newTheme" type="text" placeholder="Thème" style="width: 100%;" autocomplete="off">
+            <div id="themeSuggestions" class="suggestions-dropdown"></div>
+          </div>
+          <button type="button" id="addTheme">+</button>
         </div>
         <div id="themesList" class="tag-container small"></div>
       </div>
     </div>
 
-    <button id="saveCourse" class="green">Enregistrer</button>
-    <button id="cancelAdd" class="grey">Annuler</button>
+    <div class="link-input-group">
+      <h4>🔗 Liens vers d'autres fiches</h4>
+      <div class="link-input-row">
+        <select id="linkType">
+          <option value="répond à">Répond à</option>
+          <option value="dans la continuité de">Dans la continuité de</option>
+          <option value="s'oppose à">S'oppose à</option>
+          <option value="complète">Complète</option>
+          <option value="illustre">Illustre</option>
+          <option value="critique">Critique</option>
+        </select>
+        <input id="linkTargetId" type="number" placeholder="ID">
+        <button type="button" id="addLink">+ Ajouter</button>
+      </div>
+      <div id="addedLinks" class="added-links"></div>
+    </div>
+    </div>
   </div>
 
-  <!-- Résultats -->
-  <p id="resultsCount"></p>
   <div id="courses"></div>
+
+  <!-- Modal pour afficher une fiche -->
+  <div id="modalOverlay" class="modal-overlay" style="display: none;" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modalTitle"></h2>
+        <button class="modal-close" onclick="closeModal()">✖ Fermer</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Modal de prévisualisation avant sauvegarde -->
+  <div id="previewOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>👁️ Prévisualisation</h2>
+      </div>
+      <div class="modal-body" id="previewBody"></div>
+      <div class="preview-actions">
+        <button class="blue" onclick="backToEditor()">✏️ Retour à l'éditeur</button>
+        <button class="green" onclick="confirmSave()">💾 Enregistrer définitivement</button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
-
 <script>
-/* ===========================================================
-   =============== DONNÉES DES COURS ==========================
-   =========================================================== */
-
+// Données initiales (exemple minimal)
 const initialCourses = [
   {
     id: 1,
+    type: "detailed",
     title: "Pascal : La condition humaine et les limites de la raison",
-    content: `Pascal établit un constat sévère : l'homme est indifférent aux questions existentielles importantes mais obsédé par des choses futiles. Sa grandeur réside dans sa conscience de sa misère (il sait qu'il est misérable), mais cette conscience ne supprime pas sa misère. L'homme est un "roseau pensant" - faible physiquement mais capable de pensée.
+    content: `Pascal établit un constat sévère : l'homme est indifférent aux questions existentielles importantes mais obsédé par des choses futiles. L'homme est un **"roseau pensant"** - faible physiquement mais capable de pensée.
 
-La vanité de l'homme se manifeste dans des exemples comme l'avocat qui se réduit à sa robe, content de son statut sans comprendre son vide intérieur. L'imagination domine souvent la raison : même un philosophe sur une planche au-dessus d'un précipice aura peur malgré sa raison.
+<<<La dernière démarche de la raison, c'est de reconnaître qu'il y a une infinité de choses qui la surpassent.>>>
 
-Citation clé : "La dernière démarche de la raison, c'est de reconnaître qu'il y a une infinité de choses qui la surpassent." Être rationnel n'est pas croire que la raison peut tout expliquer, mais accepter ses limites. Les axiomes ne peuvent être prouvés par la raison - c'est contradictoire de dire que la raison peut tout expliquer.
-
-Sur les rêves, Pascal critique Descartes : on sait qu'on ne rêve pas, mais on ne peut le prouver rationnellement. Cela montre la faiblesse de la raison, pas l'incertitude de nos connaissances. Les rêves manquent de continuité logique contrairement aux journées.`,
+Voir aussi la suite de cette réflexion dans [2].`,
     authors: ["Pascal"],
-    themes: ["Raison", "Conscience", "Vérité"]
+    themes: ["Raison", "Conscience", "Vérité"],
+    links: [{type: "répond à", targetId: 2}]
   },
   {
     id: 2,
-    title: "Pascal : Scepticisme, vérités de raison et intuitions du cœur",
-    content: `Pascal s'oppose au scepticisme qui affirme "si la raison ne peut pas prouver quelque chose, alors cette chose est objectivement douteuse." C'est une contradiction performative : cet axiome lui-même ne peut être prouvé par la raison, donc il est incertain et se contredit.
+    type: "plan",
+    title: "Plan : L'empirisme de Hume",
+    content: `# I. Les impressions et les idées
 
-Même reproche à l'empirisme : "toute connaissance vient des sens" or aucun sens ne vient confirmer cette théorie. C'est le même paralogisme.
+Toute connaissance vient de l'expérience sensible. Les **impressions** sont les perceptions vives (sensations), les **idées** sont leurs copies affaiblies.
 
-Pascal distingue deux types de vérités :
-1) Vérités de raison : démonstrations, théorèmes mathématiques qui découlent d'axiomes qui ne peuvent être prouvés
-2) Intuitions du cœur : intuitif et immédiat (l'infinité des nombres, le fait qu'on ne rêve pas, l'intuition de Dieu)
+# II. Critique de la causalité
 
-On ne peut raisonner sans axiomes, mais les axiomes ne peuvent être fondés - cela exige une forme de modestie de l'homme. À moins de douter qu'on ne rêve pas, on est contraint d'y croire, mais ça ne signifie pas que c'est objectivement certain.
+La relation cause-effet n'est qu'une habitude mentale, pas une nécessité logique. Nous observons une succession constante, mais pas de lien nécessaire.
 
-Conséquences religieuses : on ne peut trouver Dieu par la raison, d'où le Pari de Pascal. Il montre aux libertins que s'ils ne croient pas, ce n'est pas par "surrationnalité" mais par orgueil. La solution passe par "la machine" (le corps, les gestes de la foi) : "Cherchez et vous trouverez."`,
-    authors: ["Pascal"],
-    themes: ["Raison", "Religion", "Vérité"]
-  },
-  {
-    id: 3,
-    title: "Calliclès vs Socrate : Le débat sur le bonheur et le désir (Gorgias de Platon)",
-    content: `Dans le Gorgias de Platon, Calliclès défend une vision hédoniste : le bonheur c'est le plaisir, il faut satisfaire tous ses désirs. Il est sophiste et relativiste (pas de vérité absolue). Pour lui, bonheur = optimisation du plaisir par rapport à la douleur (calcul utilitariste).
+# III. Conséquences sceptiques
 
-Socrate objecte : désir = manque = souffrance. Plus on souffre, plus le plaisir est grand après. Mais alors bonheur = souffrance ? C'est contradictoire. De plus, le plaisir ne dure pas, donc nouvelle souffrance.
-
-Réponse de Calliclès : il faut toujours plus désirer pour avoir toujours du plaisir. Métaphore de Socrate : ton âme est une passoire, l'eau (satisfaction) s'écoule sans cesse.
-
-Calliclès est empiriste, réduit le bonheur au plaisir animal et présent. Il néglige l'imagination humaine : Rousseau montrera qu'anticiper le plaisir crée du bonheur (dimension imaginative). Calliclès confond bonheur humain et animal.
-
-Mais Calliclès a un argument fort : sans désir le matin, pas d'action. Pas de désir = pas de motivation = absence de vie. Vivre c'est agir. Un être sans désir est comme une pierre. Le désir nous pousse à vivre.
-
-Pour Socrate, le vrai bonheur c'est maîtriser ses désirs par la raison. Dans l'âme, trois instances : raison (philosophe), volonté (gardien), désir (plèbe). La raison doit subordonner les désirs. Être heureux = régler ses désirs, même si ça semble être le bonheur d'une pierre. Le tyran qui satisfait tous ses désirs est tyrannisé par eux, anxieux, ils peuvent se retourner contre lui.`,
-    authors: ["Platon", "Socrate", "Calliclès"],
-    themes: ["Bonheur", "Désir", "Raison"]
-  },
-  {
-    id: 4,
-    title: "Bentham : L'utilitarisme et le bonheur du plus grand nombre",
-    content: `Bentham fonde l'utilitarisme : le bonheur = satisfaire tous ses désirs. Sur le plan individuel, chercher le plaisir et fuir la douleur est la loi fondamentale de tout être vivant. Donc bonheur = optimiser le plaisir.
-
-Il s'oppose à Kant qui dit que l'homme tire sa dignité de sa raison (capacité morale). Pour Kant, il faut être digne d'être heureux, pas seulement heureux. Bentham répond que même la morale se fonde sur le plaisir : quand on veut être vertueux, c'est le plaisir de l'être qu'on cherche.
-
-Sur le plan collectif/politique : le but de l'État est d'augmenter le bonheur du plus grand nombre en donnant les moyens de satisfaire tous les désirs. C'est une vision politique qui peut négliger les droits individuels et la dignité humaine (politique sacrificielle possible).
-
-Utilitarisme de l'acte : utilité marginale décroissante. 1 euro a plus de valeur pour un SDF que pour un milliardaire. Faudrait-il voler un riche pour combler 3 personnes ?
-
-VS Utilitarisme de la règle : objection à l'acte. Si tout le monde rackettait, la peur généralisée créerait de la souffrance. Il faut imaginer ce que donnerait mon acte si tout le monde le pratiquait.
-
-Problème : le bonheur dépend de ce que la majorité conçoit comme bonheur. Tout est relatif ? Quid de la dignité humaine ? Exemple : les femmes en Inde qui ont intégré leur infériorisation.`,
-    authors: ["Bentham"],
-    themes: ["Bonheur", "Justice", "État"]
-  },
-  {
-    id: 5,
-    title: "Mill : Utilitarisme et hiérarchie des plaisirs",
-    content: `Mill poursuit l'utilitarisme de Bentham mais y ajoute une nuance essentielle : tous les désirs ne se valent pas. Certains sont préférables à d'autres et il faudrait les entretenir.
-
-Citation célèbre : "Mieux vaut être Socrate insatisfait qu'un imbécile heureux." 
-
-Expérience de pensée : des gens qui connaissent les Simpson ET Shakespeare préfèrent Shakespeare, même si c'est parfois moins plaisant immédiatement. Ils trouvent Shakespeare préférable sur le plan existentiel. Preuve que certains plaisirs sont supérieurs : ceux qui connaissent les deux aspects préfèrent les plaisirs "intellectuels". Ce n'est pas nécessairement plus intense comme plaisir, mais jugé plus digne.
-
-Mill se trouve dans une situation délicate : il veut garder la logique empiriste du plaisir tout en affirmant que certaines choses sont préférables. Il essaye de fonder la dignité et certaines valeurs sur des considérations pragmatiques.
-
-Sur le plan politique : Mill défend la liberté au nom du progrès social. Les minorités dissidentes sont utiles car elles affûtent les arguments de la majorité, facteur de progrès. Mais est-ce cohérent avec l'utilitarisme pur ? Le progrès social devient une valeur en soi.
-
-Problème : on peut imaginer un peuple de crétins satisfaits. "Mieux vaut être Socrate insatisfait" mais alors le bonheur n'est plus la valeur absolue. Mill veut "le beurre et l'argent du beurre" en conciliant utilitarisme et valeurs objectives.`,
-    authors: ["Mill"],
-    themes: ["Bonheur", "Liberté", "Justice"]
-  },
-  {
-    id: 6,
-    title: "Schopenhauer : Le vouloir-vivre, la souffrance et l'art",
-    content: `Schopenhauer, influencé par le bouddhisme et Hume, développe une philosophie pessimiste. Pour lui, le principe de causalité est une interprétation de notre esprit, pas le réel en soi. Donc le monde est absurde, pas besoin de créateur.
-
-Le seul accès absolu à la vérité : notre propre corps vécu de l'intérieur. Constat : tous les êtres vivants désirent, tendent à survivre. Le "vouloir-vivre" = élan vital inexpliqué.
-
-Désir = manque = souffrance. Quand on satisfait un désir, on s'ennuie. "La vie oscille comme un pendule de droite à gauche, de la souffrance à l'ennui." Cycle : manque → souffrance → satisfaction → ennui → nouveau désir.
-
-Le plaisir n'est que momentané, par contraste avec la souffrance (on sent son rhume quand il part). Le bonheur est impossible comme état stable et durable.
-
-Pourquoi continue-t-on à vivre malgré ce ratio défavorable douleur/plaisir ? Le vouloir-vivre nous pousse à survivre malgré l'absurdité. Preuves : la folie (le vouloir-vivre crée un monde parallèle pour éviter le suicide après un trauma) et l'instinct sexuel (survie de l'espèce - on cherche chez l'autre des qualités qui compensent les nôtres).
-
-Solutions pour atteindre une paix intérieure relative :
-- L'art : on s'oublie soi-même, plus de désir pour cette personne qu'on défend = libéré de soi
-- La philosophie : comprendre le monde fait qu'on s'oublie, on n'est plus suspendu à ses désirs
-- La morale fondée sur la pitié : révélation qu'on est tous la même chose, incarnations éphémères du vouloir-vivre
-
-Le "moi" est une illusion : on est des gouttes d'un océan, différentes en apparence mais même eau.`,
-    authors: ["Schopenhauer"],
-    themes: ["Bonheur", "Désir", "Art", "Conscience"]
-  },
-  {
-    id: 7,
-    title: "Rousseau : L'imagination, l'anticipation et le bonheur",
-    content: `Rousseau critique Calliclès : celui-ci réduit le plaisir humain au plaisir animal lié à la satisfaction d'un besoin physiologique, satisfaction face à l'objet réel et présent.
-
-Or grâce à son imagination, l'Homme peut anticiper la satisfaction d'un désir et jouir de ce qu'il n'a pas encore, comme s'il l'avait déjà. L'anticipation du plaisir est un désir présent qui crée du bonheur immédiat. Le moment le plus agréable est souvent quand on déballe un cadeau - on espère plein de choses.
-
-Citation : "Malheur à qui n'a plus rien à désirer, il perd pour ainsi dire tout ce qu'il possède = ennui."
-
-Dans La Nouvelle Héloïse, Julie a tout obtenu (son amant, sa raison) mais son corps est vide, elle n'a plus rien à désirer, donc s'ennuie. La satisfaction est toujours décevante au regard de ce qu'on en attendait.
-
-Pour Rousseau, le bonheur est lié au désir lui-même plutôt qu'à sa satisfaction. Le royaume de l'imagination est plus agréable que le réel (plus vaste, flou, on peut tout concilier). Autant y rester et cultiver ses désirs.
-
-Application : Dolto et l'enfant-roi. Problème : l'enfant qui obtient tout immédiatement n'apprend pas à ressentir la frustration, donc développe mal son imagination. Apprendre à différer la satisfaction des désirs permet de développer l'imagination. Sinon l'enfant devient un adulte malheureux, caractériel, handicapé du désir, incapable de rester seul.
-
-L'humain a des besoins (vital) ET des désirs (spiritualisation du besoin). Pas besoin de satisfaire un désir pour être heureux, y penser suffit.`,
-    authors: ["Rousseau"],
-    themes: ["Bonheur", "Désir", "Imagination"]
-  },
-  {
-    id: 8,
-    title: "Saint-Augustin : Dieu, l'amour et le bonheur religieux",
-    content: `Saint-Augustin propose une solution religieuse au problème du bonheur. Il s'oppose à Spinoza et aux stoïciens qui disent : fais dépendre ton bonheur uniquement de ce qui dépend de toi (ta compréhension rationnelle du monde).
-
-Objection d'Augustin : "Qui veut faire l'ange fait la bête" (Pascal). Ce n'est ni réaliste ni souhaitable. L'homme n'est pas un Dieu autosuffisant. Il est un être relationnel, de dépendance (Aristote : animal social). Robinson devient fou sur son île. On ne peut pas vivre seul ni être heureux seul.
-
-Distinction cruciale : espoir païen (incertitude liée à la crainte) VS espérance chrétienne (certitude, propre de la foi).
-
-Solution d'Augustin : faire dépendre son bonheur de quelqu'un qui ne peut ni mourir ni nous quitter = Dieu. Bonheur non terni par la crainte et l'incertitude. On peut aimer les autres "en Dieu" : les aimer en ce qu'ils peuvent être sauvés, en tant qu'âmes immortelles. Après la mort de sa mère, Augustin était presque joyeux par l'espérance de la retrouver dans la vie éternelle.
-
-Théorie du désir : tous nos désirs particuliers (contingents) sont des incarnations d'un désir primordial, fondamental = le désir d'infini, le désir de Dieu. Les désirs particuliers sont comme les branches d'un arbre, productions d'un désir fondamental. On essaie de combler un désir infini avec des choses finies (Black Friday). On trouve les objets beaux parce qu'on veut les acheter (Spinoza), pour tenter de ne plus désirer.
-
-Citations : "Tu nous as fait pour toi Seigneur..." et "Tu es plus intérieur à moi-même que moi-même." Dieu seul peut satisfaire ce désir d'infini. En le satisfaisant, on n'a plus besoin des substitutions contingentes. Pas de frustration car chaque jour on est content de mieux le connaître, on ne fait pas le tour de Dieu.`,
-    authors: ["Saint-Augustin"],
-    themes: ["Bonheur", "Religion", "Désir"]
-  },
-  {
-    id: 9,
-    title: "Russell : Hédonisme altruiste et intégration sociale",
-    content: `Russell concilie le plaisir avec la morale en distinguant deux figures :
-
-1) Le moraliste : fait une différence entre lui et le monde = intérêts divergents = le sacrifice moral est douloureux, abnégation consciente (obsédé par son sacrifice)
-
-2) L'hédoniste (vision de Russell) : ne sépare pas le bonheur de la vertu. "On ne demande pas à l'homme de se sacrifier mais de placer ses intérêts en dehors de soi."
-
-Argument : nous sommes constitués par les autres, les autres nous habitent. Exemple : bonne note - on en est heureux car on est pétri par les attentes des autres. Le moi n'est pas séparé du monde. Si je place mon intérêt dans le fait que la classe soit la meilleure possible, aider les autres = agir dans mon intérêt.
-
-Hédoniste altruiste : comprend que son intérêt est l'intérêt des autres car il ne peut pas être heureux seul. Même état d'esprit, même actes mais différent du moraliste.
-
-Le malheur = désintégration = manque de coordination entre conscient et inconscient (conflit intérieur) OU manque d'intégration entre moi et société. Difficile aujourd'hui car la société est fragmentée en archipel d'îles (plus de valeurs communes, religion, passé commun). Communauté européenne : c'est quoi l'intérêt commun ?
-
-Avant : valeurs républicaines, rapport à l'histoire créaient identité commune et intérêt commun (exemple : Marcel Pagnol, se sacrifier pour la patrie).
-
-La vraie joie la plus intense : toujours celle qui nous relie au reste du monde (mère qui se réjouit de la réussite de son enfant) VS joie du shopping moins englobante.
-
-Même la mort n'est plus troublante si on s'identifie aux générations futures. Jean Moulin fait partie de cette génération future, son bonheur en dépend.`,
-    authors: ["Russell"],
-    themes: ["Bonheur", "Morale", "Liberté"]
-  },
-  {
-    id: 10,
-    title: "Spinoza : Déterminisme, liberté et amour intellectuel",
-    content: `Spinoza commence à philosopher après avoir été amoureux de sa prof de latin. Lettre : "J'ai compris qu'il était possible que je ne sois jamais heureux car mon bonheur ne dépend pas de moi = l'amour, la richesse, les honneurs." Si mon bonheur dépend de ce qui ne dépend pas de moi, je suis dans l'espoir/crainte. Espoir = crainte (on espère une bonne note donc on craint de ne pas l'avoir). Anxiété de l'incertitude du futur.
-
-Solution : faire reposer son bonheur sur ce qui dépend de soi = la raison, seule chose qu'on ne peut pas perdre. Échanger une joie contre une autre : passer de la passivité de l'amour à l'action de la raison. La joie de comprendre pourquoi je l'aime console de la non-réciprocité.
-
-Il faut échanger de plus en plus d'affects passifs (ce que le monde inspire comme désir) contre des affects actifs (compréhension rationnelle). Vision intellectualiste du bonheur. Inspiration stoïcienne : profiter des plaisirs du buffet sans en dépendre.
-
-Déterminisme : tout est déterminé. En comprenant que le monde ne peut pas être différent, cesser d'espérer et aimer ce qui est. On ne s'énerve pas contre le psychopathe déterminé par ses causes. "On trouve les choses bonnes parce qu'on les désire" (et non l'inverse). Exemple : on trouve les épinards bons donc ils sont bons.
-
-Objection : l'homme n'est pas un empire dans un empire. Si la nature est déterminée, moi aussi. Pas de libre arbitre. Mais liberté = dire oui à la nécessité, aimer ce monde nécessaire, s'affranchir des désirs qui rendent malheureux. Faire dépendre mon bonheur que de ce qui dépend de moi = compréhension du déterminisme.
-
-Pour Spinoza : seul bonheur possible = indépendance. Distinguer ce qui dépend de moi et ce qui n'en dépend pas.`,
-    authors: ["Spinoza"],
-    themes: ["Liberté", "Bonheur", "Raison"]
-  },
-  {
-    id: 11,
-    title: "Kant : Morale, raison et dignité humaine",
-    content: `Pour Kant, l'homme n'est pas qu'un être de plaisir mais aussi de raison, donc de morale. Il ne faut pas chercher à être heureux mais se rendre digne de l'être par la vertu.
-
-Objection à l'utilitarisme : même la morale fondée sur le plaisir selon Bentham. Quand on veut être vertueux, c'est le plaisir de l'être qu'on cherche, donc intéressé. Or la morale doit être désintéressée.
-
-Kant fonde la morale sur la raison, pas sur l'intuition ni le sentiment (trop contingents : quid des sociopathes ?). Le sentiment est intéressé : en donnant de l'argent, on veut abréger NOTRE douleur.
-
-La raison = universel, donc la maxime morale énoncée par la raison : si je fais quelque chose, je veux que tout le monde le fasse (universalisation). Si tout le monde triche, ça ne sert à rien.
-
-Raison = faculté de l'universel, instrument de la morale. Permet de lutter contre les instincts et de savoir quoi faire dans l'instant (universalisation de la maxime).
-
-Bonheur = idéal de l'imagination selon Kant, désirs contradictoires. Le bonheur peut aller à l'encontre de la morale (grimper en entreprise en faisant des crasses). Donc il faut préférer se rendre digne d'être heureux.
-
-MAIS Kant dit aussi : faut faire tout ce qui est dans notre pouvoir pour être heureux, car plus facile d'être bon quand on est heureux. Tout faire pour optimiser les conditions de la moralité. But absolu = morale. On ne peut pas s'empêcher de vouloir être heureux = 2ème but qui ne doit pas contredire le 1er.
-
-Dignité humaine : l'homme tire sa dignité de sa raison (capacité morale). On a une raison + intuition morale universelle. Si on a les moyens d'être moral (raison pour lutter contre instincts), c'est qu'on est appelés à l'être. L'essence fait le but.`,
-    authors: ["Kant"],
-    themes: ["Morale", "Raison", "Liberté", "Bonheur"]
-  },
-  {
-    id: 12,
-    title: "Descartes : Libre arbitre, raison et vérité",
-    content: `Descartes défend le libre arbitre : preuve par l'évidence qu'elle revêt pour nous. Les animaux n'ont pas ce sentiment d'être libres donc ne le sont pas. La liberté se prouve par l'expérience de l'hésitation.
-
-État d'indifférence = je ne suis déterminé par rien, indifférent entre pain au chocolat et croissant. Je suis libre car capable de choisir quand je suis indifférent, pas déterminé. L'âne de Buridan incapable de choisir entre faim et soif : il n'est pas libre car contraint par déterminismes pulsionnels.
-
-Je suis capable de choisir sans motifs déterminants. Même cause peut produire effets différents (mondes parallèles où je choisis différemment).
-
-Sur le bonheur et la vérité : "Tout le plaisir qui en revient ne peut toucher que la superficie de l'âme, laquelle sent cependant une amertume intérieure." Le bonheur fondé sur l'illusion est incomplet car notre raison, faite pour connaître la vérité, en est frustrée.
-
-Vision essentialiste du bonheur (vs phénoménaliste) : une vie réussie correspond à des valeurs objectives. Aristote : chaque organe a une fonction propre, le bonheur de l'organe = exercer conformément à ce qu'il était fait. Nous avons une raison que nous devons exercer.
-
-Bonheur purement sensoriel est incomplet. Notre raison ne peut pas ne pas vouloir connaître la vérité (curiosité des enfants). Donc bonheur inséparable de la vérité.
-
-Degrés de liberté : plus haute liberté = choisir le vrai/bien. Moins haute = illusion/méchanceté. Liberté morale > choisir son goûter. Mais cette liberté morale repose sur le libre arbitre.`,
-    authors: ["Descartes"],
-    themes: ["Liberté", "Raison", "Vérité", "Bonheur"]
-  },
-  {
-    id: 13,
-    title: "Leibniz : Les petites perceptions et l'inconscient descriptif",
-    content: `Leibniz postule un inconscient psychologique descriptif : notre cerveau capte des choses sans qu'on en ait conscience. Il parle des "petites perceptions" - notre cerveau fait le tri car si on captait tout ce serait l'enfer (forme d'autisme, saturation).
-
-Exemples de petites perceptions :
-- Dans une foule, on n'a pas conscience des conversations (brouhaha chaotique) mais soudain on entend notre prénom comme si notre cerveau veillait inconsciemment
-- Les vagues : une goutte seule, je ne l'entends pas consciemment. Mais j'entends la vague, donc j'entends chaque goutte = petite perception. On n'a pas conscience de l'apercevoir
-- Le sommeil : on se réveille d'un coup car notre inconscient nous réveille via une petite perception
-
-Distinction : petites perceptions (inconscientes) VS aperceptions (perceptions conscientes d'elles-mêmes).
-
-Réfutation du libre arbitre cartésien : Descartes fonde la liberté sur l'évidence de l'expérience de l'indifférence (choisir sans motifs déterminants). Mais pour Leibniz, quand on pense être complètement indifférent entre deux choix, une petite perception dont on n'a pas conscience penche la balance d'un côté.
-
-Le fait de dire qu'aucun motif n'est équivalent à un autre est faux. Il y a toujours des petites perceptions qui déterminent notre choix. Je suis libre car je n'ai pas conscience que je ne peux pas choisir (rejoint Spinoza).
-
-L'inconscient de Leibniz est seulement descriptif : aucune force ne s'oppose à la remontée à la conscience de certaines petites perceptions. Différence avec Freud (inconscient dynamique).`,
-    authors: ["Leibniz"],
-    themes: ["Conscience", "Inconscient", "Liberté"]
-  },
-  {
-    id: 14,
-    title: "Freud : Inconscient dynamique, pulsions et refoulement",
-    content: `Freud postule un inconscient dynamique (contrairement à Leibniz) : il y a des choses que mon inconscient refuse de laisser à la surface de ma conscience. Mouvement actif de censure.
-
-Structure de la psyché :
-- LE ÇA : réservoir de pulsions inconscientes (pulsion de vie = sexuel + autoconservation ; pulsion de mort = agressive, masochisme/sadisme)
-- LE SURMOI : intériorisation des normes sociales, règles morales (pudeur, retenue)
-- LE MOI : interface de négociation entre ça et surmoi, contact avec la réalité
-
-Le Ça et le Surmoi sont en conflit. Le Moi essaye de concilier les deux, va refouler certaines pulsions car elles ne peuvent pas toutes se satisfaire (censure).
-
-Citation : "Le Moi n'est pas maître dans sa maison."
-
-Problèmes : Surmoi trop faible = sociopathe, pervers narcissique, pas intériorisé la morale. Surmoi trop fort = personnalité obsessionnelle.
-
-Sublimation : quand le Ça ne peut pas se satisfaire directement, les pulsions refoulées ressurgissent de manière sublimée (déviée, symbolisée). Exemple : Tarentino sublime ses pulsions d'agressivité dans ses films. Ou dans les rêves.
-
-Preuves de l'inconscient selon Freud :
-1) Principe de raison suffisante : les rêves, lapsus, actes manqués ont forcément une cause. Si pas de cause physique à un symptôme physique (hystérie, paralysie), alors elle doit être psychique.
-2) Ça marche : argument empirique. Patients guérissent quand l'origine inconsciente remonte à la surface lors de la cure psychanalytique.
-
-Objection de Popper : pseudoscience = théorie qui se refuse à toute possibilité de réfutation. Tout confirme la théorie. Détester la psychanalyse ? Il y a une raison inconsciente chez vous...
-
-Stades du développement : oral (0-1an), anal (1-3ans), phallique (3-6ans, Œdipe), latence, génital (12+).`,
-    authors: ["Freud"],
-    themes: ["Inconscient", "Liberté", "Conscience"]
-  },
-  {
-    id: 15,
-    title: "Bourdieu : Déterminisme sociologique et violence symbolique",
-    content: `Bourdieu postule un inconscient sociologique : nous sommes déterminés par notre classe sociale = manière de voir le monde (politique, habillement, valeurs, morale). L'habitus.
-
-Exemples concrets :
-- Rapport à la nourriture : Midi chez des paysans = idéologie de la bonne franquette (viandes en sauce, même assiettes, impression d'abondance, franc parler). VS Riches : manger le moins possible, laisser dans l'assiette = êtres spirituels, pas des estomacs sur pattes.
-- Rapport à l'art : Photo de mains ridées. Classes populaires : réaction matérielle. Classes moyennes : allégorie de la condition humaine. Classes bourgeoises : comparaison avec d'autres photographes, analyse formelle. Passage progressif de la matière à la forme.
-
-"La Distinction" : Être distingué = se distinguer. On ne peut être distingué qu'en se distinguant des autres. Les valeurs ne sont pas objectives, changent en permanence. Ce qui motive les classes = volonté de se distinguer.
-
-"Nos goûts sont des dégoûts" : inclusifs (MA classe) et exclusifs (excluent les autres). Loi constitutive de l'inconscient sociologique.
-
-Consommateur omnivore : jeunes bourgeois écoutent du rap mais connaissent pas que ça. VS Jeunes du 93 : connaissent que le rap. Mimer la vulgarité = snobisme (être au-dessus de sa propre richesse, suffisamment riche pour jouer au pauvre).
-
-Violence symbolique : quand on a honte, on a intériorisé les valeurs de la classe dominante. Quelqu'un exerce une violence symbolique (mots qu'on ne comprend pas, références, armes inégales). Hommage que les dominés font aux dominants.
-
-But de Bourdieu : montrer que la liberté est un concept bourgeois pour entériner la hiérarchie de domination ("t'avais qu'à bosser"). Fossiliser par culpabilisation. Paralogisme : puisque nos goûts sont déterminés, alors tous les goûts sont relatifs ? Non, ne pas confondre origine et valeur.`,
-    authors: ["Bourdieu"],
-    themes: ["Inconscient", "Liberté", "Justice", "Société"]
-  },
-  {
-    id: 16,
-    title: "Sartre : Conscience réflexive et liberté",
-    content: `Sartre distingue conscience perceptive (commune aux animaux) et conscience réflexive (propre à l'homme). Réflexion = le problème se reflète dans notre esprit. Double sens : refléter et réfléchir à. La conscience réflexive = réfléchir l'univers entier dans notre tête.
-
-Exemple : timidité. Conscience perceptive : je la vis. Conscience réflexive : je la vis ET j'y réfléchis. Je me regarde en train d'être timide donc ça me pousse à réfléchir sur ma timidité. Je suis la timidité ET celui qui en a conscience = plus vraiment timide.
-
-"L'homme est ce qu'il est et n'est pas ce qu'il est." La conscience est faculté de dédoublement, on se regarde agir. Acteur ET personnage. On vit des choses et on se regarde être et vivre des choses.
-
-Donc la sincérité est un idéal impossible à atteindre pleinement. On décolle de nous-mêmes tout le temps.
-
-Cette faculté de décollement, de recul = preuve de la liberté selon Sartre. J'imagine autre chose de possible, je suis capable de critiquer, de prendre du recul, je pourrais être autrement. Conscience = liberté.
-
-Conscience morale (Kant) : lutter contre ses pulsions intéressées grâce à la loi morale. Vraie liberté pour Kant = bien vouloir (ressemble au bien moral).
-
-Lien entre liberté, conscience et responsabilité. Si inconscient = pas de liberté = pas de liberté morale = pas de responsabilité, plus de blâme, plus d'éloge. Mais on est responsable de ce qu'on fait de ce qu'on est (Freud : se connaître assez pour maîtriser son inconscient).`,
-    authors: ["Sartre"],
-    themes: ["Conscience", "Liberté"]
-  },
-  {
-    id: 17,
-    title: "Kierkegaard : Stades de l'existence, engagement et imagination",
-    content: `Kierkegaard distingue le fini (corps, société, rôle social, nécessaire) et l'infini (imagination, possible, liberté). L'être humain = tension constante entre ce qu'il est et ce qu'il aimerait être.
-
-Le but d'une vie : devenir soi = opérer une synthèse entre ce qu'on est et ce qu'on aimerait être. Pas être un PNJ soumis au fini, fataliste, résigné qui se confond avec son rôle.
-
-Deux types de désespoir :
-1) Désespoir par manque de fini : se dépersonnaliser dans l'imagination (adolescent romantique qui rêve sa vie au lieu de la vivre = ne devient personne, ne réalise rien, commence tout et ne finit rien, "je veux être pasteur...puis acteur")
-2) Désespoir par manque d'infini : le fataliste résigné qui s'enferme dans un rôle social et s'y réduit, oubliant qu'il est libre de se choisir et de changer. Écrasé par la nécessité.
-
-Trop d'infini = Don Juan / Faust : dans le fantasme permanent, ne supporte pas d'accepter un rôle social. Pense qu'il est absolument libre. Emma Bovary ne supporte pas sa vie. Don Juan = séducteur, considère le "concept" de la femme, abstraction du réel, prend les gens pour des objets. Faust = intellectuel curieux, Don Juan de la pensée, ne prend jamais position, retarde le choix.
-
-Problème : avoir plein de choix sans engagement = mauvaise conception de la liberté. Liberté virtuelle, pas réelle. La liberté n'existe que si elle est employée. Erreur : croire qu'on est libre en ne choisissant pas (indéterminé ≠ libre).
-
-Liberté = choisir qui on est. N'existe que si on est réel. Ne pas voter = fantasme de liberté.
-
-Trois stades :
-- Stade esthétique : jouisseur, ne se choisit pas
-- Stade éthique : engagement relation et métier
-- Stade religieux : on opte pour une religion
-
-Question : non pas "sommes-nous libres ?" mais "quels sont les degrés de la liberté ?" Liberté inversement proportionnelle à la raison. La foi = moins de raisons objectives, donc plus de liberté (pas déterminé par des raisons). Passion compense. Vérité subjective (foi) vs vérité objective (sciences).`,
-    authors: ["Kierkegaard"],
-    themes: ["Liberté", "Imagination", "Religion"]
-  },
-  {
-    id: 18,
-    title: "Locke : Droits naturels, liberté et propriété",
-    content: `Locke, philosophe libéral, explique que l'humain = être libre car a une raison qui lui permet de faire des choix (contrairement aux animaux). C'est son essence = être libre. Donc faut un État qui garantit ma liberté, fondement de mes droits inaliénables.
-
-Droit naturel selon Locke = droits inaliénables qu'on a tous, déduits de notre essence :
-1) Droit à la vie : la raison garantit dignité, la vie est précieuse car on est singulier chacun par notre raison
-2) Droit à la liberté : notre essence
-3) Droit à la propriété : issu de cette liberté. Si je suis libre, je suis propriétaire de mon corps. Donc ce que mon corps modifie m'appartient. Locke fonde ainsi la propriété privée.
-
-Position politique : pas pour redistribution des richesses. Les impôts = vol selon lui, comme des travaux forcés. MAIS impôts nécessaires pour police, armée, justice car protection nécessaire à notre liberté.
-
-Distinction : Liberté négative (ne pas être contraint) VS Liberté positive (ne pas être contraint ET pouvoir faire des choses).
-
-Commandements divins : l'homme a donc droit à la vie (sécurité), liberté et propriété. Mes devoirs envers les autres (respecter leur vie) sont aussi des devoirs vis-à-vis de moi-même (respecter la mienne, pas de cannibalisme consenti).
-
-Exemple : si l'État m'envoie au front, c'est paradoxalement pour me défendre contre la menace de mort de mon adversaire. En revanche, un général ne pourrait pas voler 5 centimes à un soldat.
-
-Puisque mon humanité réside en ma liberté, laquelle me rend capable de moralité, on ne peut pas m'ôter ma liberté sans m'ôter mon humanité. L'État n'a donc pas à m'imposer une vision du bonheur et les moyens d'y parvenir.
-
-Locke VS Marx.`,
-    authors: ["Locke"],
-    themes: ["Liberté", "Justice", "État", "Droit"]
-  },
-  {
-    id: 19,
-    title: "Rawls : Justice, voile d'ignorance et égalité des chances",
-    content: `Rawls développe le "libéral-égalitarisme" : essaye de concilier liberté et égalité. URSS = égalité sans liberté. États-Unis = liberté sans égalité. France = entre les deux.
-
-Pour Rawls, la liberté = avoir plusieurs choix ET avoir les moyens de se diriger de manière éclairée et rationnelle vers certains choix. Liberté civique/légale VS liberté réelle (exemple : liberté de se faire soigner, mais les pauvres ont plus de difficultés à payer).
-
-Deux principes d'une société juste :
-
-1) Les libertés de base : liberté circulation, pensée, vote. Sous prétexte d'égalité, l'État ne doit pas interférer avec ça.
-
-2) Égalité des chances : "Le voile d'ignorance" = expérience de pensée. Nos sociétés ne sont jamais d'accord car religions, cultures différentes. Comment trouver des principes de justice ?
-
-Voile d'ignorance : on oublie d'où on vient, orientation, ethnie, religion, valeurs, milieu social, intelligence = plus d'identité, plus de biais. Gâteau avec parts inégales : on ne sait pas à qui va chaque part donc on vote pour des principes les moins cruels pour les minorités. Au cas où on est dans la minorité défavorisée.
-
-Intolérance au risque : on préfère réduire les inégalités (société française hiérarchisée, État providence) VS États-Unis (beaucoup de risques, facile d'emprunter).
-
-Critique de la méritocratie : On mérite rien selon Rawls. On naît avec des talents différents qu'on n'a pas choisis. Société féodale = pouvoir lié au sang (pas de mérite). Après Révolution = pouvoir lié à l'argent (mérite-t-on la richesse de notre milieu ?). Même nos efforts, on ne les mérite pas (l'aîné fait plus d'efforts car plus responsabilisé, éducation plus rigoriste).
-
-Principe : Inégalité juste QUE si elle bénéficie aux plus défavorisés. Pas marxiste car sinon plus d'incitation à l'excellence. Exemple : primes aux médecins nécessaires mais seulement si ça bénéficie aux plus défavorisés (avoir plus de chirurgiens). Redistribution des richesses possible mais attention aux inégalités qui ne bénéficieraient pas aux plus défavorisés.`,
-    authors: ["Rawls"],
-    themes: ["Justice", "Liberté", "État", "Égalité"]
-  },
-  {
-    id: 20,
-    title: "Weber : Éthique de conviction vs éthique de responsabilité",
-    content: `Weber distingue deux types d'éthique en politique :
-
-1) Éthique de la conviction (déontologisme) : obéir à des principes moraux absolus quelles qu'en soient les conséquences. Agir selon des valeurs morales qui nous semblent absolument justes, indépendamment des résultats.
-
-2) Éthique de la responsabilité (conséquentialisme) : agir en fonction des conséquences de nos actes (exemple : "casser les œufs pour l'omelette", goulag au nom de principes moraux).
-
-Pour Weber, un homme politique ne peut pas agir seulement selon l'éthique de la conviction, car il doit tenir compte des conséquences de ses actes sur la société. Mais il ne peut pas non plus agir uniquement selon l'éthique de la responsabilité, car cela pourrait mener à des dérives totalitaires (justifier n'importe quel moyen par la fin).
-
-La question cruciale : À partir de quand la fin ne justifie plus les moyens ? Quand ceux-ci sont trop pervers ?
-
-L'homme politique doit trouver un équilibre entre ces deux éthiques. Il doit avoir des convictions morales (éthique de conviction) mais aussi considérer les conséquences réelles de ses décisions (éthique de responsabilité).
-
-Opposition : Politique VS Morale. Peut-on être moral en politique ? Faut-il sacrifier certains principes pour le bien commun ? Jusqu'où ?
-
-Rapport au totalitarisme : encadrer toutes les activités individuelles, politisation de la société, parti monopolistique, absence de différence entre État et société, monopole de l'information et des moyens de diffusion, politique qui dirige l'économie (planisme d'Hayek), toute faute = péché idéologique.
-
-Un régime totalitaire agit souvent au nom de l'éthique de responsabilité poussée à l'extrême : sacrifier des individus pour le "bien supérieur" de la société ou de l'idéologie.`,
-    authors: ["Weber"],
-    themes: ["Morale", "État", "Justice"]
-  },
-  {
-    id: 21,
-    title: "Nozick : La machine à expériences et la valeur du réel",
-    content: `Nozick propose une expérience de pensée cruciale : la machine à expériences. Cette machine envoie des stimuli pour créer le bonheur parfait. On pense que c'est réel. Question : voulez-vous y entrer ?
-
-La plupart des gens refusent. Pourquoi ? Le bonheur ne se limite pas au ressenti agréable. Plusieurs raisons :
-
-1) On veut faire des choses dans la réalité, pas juste avoir l'impression de les faire. Le fait de faire des choses réellement compte.
-
-2) Importance de l'objectivité du réel > simple impression du réel. On préfère la réalité même si elle est moins plaisante.
-
-3) Pas rêver de faire du bien, mais le faire vraiment. L'action réelle a une valeur en soi.
-
-Cela distingue deux visions du bonheur :
-
-Vision phénoménaliste (Bentham) : une vie est réussie si on a le sentiment qu'elle l'est. L'imagination/illusion peut être le moyen le plus sûr du bonheur.
-
-VS Vision essentialiste (Nozick/Descartes) : le bonheur est inséparable de la vérité. Une vie réussie est celle qui correspond à des valeurs objectives, pas seulement à un ressenti agréable.
-
-Argument : le bonheur purement sensoriel est incomplet. Notre raison, qui ne peut pas ne pas vouloir connaître la vérité, en est frustrée (amertume de Descartes). Faire des choses grandes est plus important que juste être heureux.
-
-Conséquence : la réalité est plus importante que l'agréabilité. Il y a quelque chose qui nous importe plus que le simple bonheur : faire des choses qui ont un sens réel, avoir un impact objectif sur le monde, être dans la liberté plutôt que dans l'illusion confortable.
-
-Application politique : mieux vaut qu'un peuple soit libre plutôt que l'État-providence lui donne de l'argent en le maintenant dans une dépendance. "Le meilleur des mondes" d'Huxley illustre ce danger.`,
-    authors: ["Nozick"],
-    themes: ["Bonheur", "Vérité", "Liberté"]
-  },
-  {
-    id: 22,
-    title: "Aristote : Eudémonisme, finalisme et bonheur",
-    content: `Aristote développe l'eudémonisme : le bonheur est la fin absolue de toute action humaine. Seule chose qu'on veut pour elle-même, pas comme moyen d'autre chose. On mange des chips pour être heureux, mais on n'est pas heureux pour quelque chose d'autre.
-
-Question centrale : Comment être heureux ? Si le moyen d'être heureux c'est le désir, or le désir est infini donc frustrant, comment résoudre ce problème ?
-
-Vision finaliste du réel : chaque organe a une fonction propre. Le bonheur de l'organe = exercer conformément à ce pour quoi il était fait. Exemple : les pieds servent à marcher, si on ne s'en sert pas, ils ne remplissent pas leur fonction.
-
-L'homme a une raison (contrairement aux animaux). Donc exercer sa raison = bonheur proprement humain. Comprendre quelque chose procure une joie. Pour Aristote : bonheur est ce qui s'ajoute à ce qu'on ne peut pas s'empêcher de faire = comprendre.
-
-Le méchant ne peut pas être vraiment heureux selon Aristote. Quand on fait le mal, on est tiraillé. Partie vicieuse se réjouit mais partie vertueuse a honte. Le méchant est schizophrène, tiraillement entre deux émotions contradictoires. Il y a une partie de vertu en lui qui souffre.
-
-Le méchant essaye de fuir dans une sociabilité outrée : traîner avec le plus de gens possible, s'abrutir pour ne pas voir les choses en face. Il sera avec les gens mais sur fond d'anxiété. Il se fuit, ne peut pas se regarder en face.
-
-L'homme est un animal social : ne peut pas vivre seul, être heureux seul. Robinson devient fou sur son île. Citation : "L'homme est un animal politique/social."
-
-Le bonheur combine : exercice de la raison (comprendre) + vie sociale + satisfaction raisonnable des besoins. L'eudémonisme inclut plusieurs branches : hédonisme (plaisir), intellectualisme (raison).`,
-    authors: ["Aristote"],
-    themes: ["Bonheur", "Raison", "Morale"]
-  },
-  {
-    id: 23,
-    title: "Platon : Allégorie de la caverne et accès à la vérité",
-    content: `L'allégorie de la caverne illustre le rapport entre apparence et vérité. Des hommes enchaînés voient des ombres projetées sur un mur = discours politiques des sophistes, illusions du monde sensible. Les marionnettes = monde matériel qu'on crée. Les ombres = fausses représentations.
-
-Exemple : le concept d'ordinateur est plus vrai que l'ordinateur qu'on voit (qui n'en est qu'un exemple particulier, imparfait). Les Idées (Formes) sont plus réelles que leurs manifestations sensibles.
-
-On pense que les ombres sont vraies, donc on ne va pas se détacher. Notre imagination est trompeuse car on ne sait jamais qu'on imagine. Elle ne s'assume pas, fait croire qu'elle n'est pas une imagination = caractère pervers de l'imagination.
-
-Le philosophe qui se libère : il sort de la caverne, voit le soleil (la vérité, le Bien). Mais il souffre, il est seul, personne ne le comprend. Quand il redescend pour libérer les autres, ils ne le croient pas, veulent le tuer. Référence à Socrate qui va mourir.
-
-Pas agréable, la vérité. On se sent seul. Nécessite un effort. Mais l'homme a une raison donc est fait pour comprendre. Compréhension supérieure à tout, même au bonheur immédiat.
-
-Les formes intelligibles (le monde des Idées) sont éternelles, parfaites. Le monde sensible n'en est qu'un reflet imparfait, changeant. Accéder à la vérité = sortir du sensible pour accéder à l'intelligible par la raison.
-
-Le philosophe a le devoir de redescendre dans la caverne pour gouverner justement, même si c'est moins agréable que la contemplation des Idées. Justice de l'âme = justice de la cité : raison gouverne, volonté applique, désirs obéissent.`,
-    authors: ["Platon", "Socrate"],
-    themes: ["Vérité", "Raison", "Justice", "État"]
-  },
-  {
-    id: 24,
-    title: "Kant : Le beau, l'agréable et le vrai",
-    content: `Kant établit des distinctions fondamentales :
-
-L'AGRÉABLE (gastronomie) : uniquement fondé sur la SENSIBILITÉ. Purement sensoriel, purement subjectif. Des goûts et des couleurs on ne discute pas. On n'argumente pas pour des épinards.
-
-LE VRAI (science) : uniquement fondé sur l'ENTENDEMENT. Universel, objectif, met tout le monde d'accord.
-
-LE BEAU (art) : convoque SENSIBILITÉ + ENTENDEMENT. Caractère ambigu de l'art. C'est agréable mais pas seulement. Ça fait aussi réfléchir, plaisir intellectuel.
-
-Preuve : on essaye de convaincre quelqu'un pour qu'il aime aussi un film (on argumente), mais pas pour des épinards. Le beau a une dimension universelle sans concept déterminant.
-
-Concept scientifique = déterminant : j'ai le concept en tête (définition de la fleur) puis je l'applique à un objet réel.
-
-VS Concept artistique = réfléchissant : j'ai d'abord la chose réelle puis je dis que c'est beau ou non. La chose réfléchit la beauté. On ne peut pas avoir de concept a priori du beau qu'on appliquerait mécaniquement aux œuvres.
-
-"Le beau = ce qui est universellement beau sans concept." Le bonheur absolu de l'œuvre d'art = sensibilité et entendement sont réconciliés. Le corps et l'esprit s'harmonisent.
-
-La beauté relève de ma perception (subjective) MAIS puisqu'il y a de l'entendement (plaisir intellectuel), on peut débattre avec des arguments intellectuels. Plus facile de montrer la supériorité de Bergman face à une pub que choucroute vs épinard.
-
-Que le plaisir esthétique soit subjectif ne signifie pas que tout se vaut. On peut avoir des arguments intellectuels en faveur d'une œuvre.
-
-Danger de l'académisme : définition objectiviste trop rigide de la beauté qui refuse l'art original. Bataille de Hernani (Victor Hugo), peinture impressionniste = refusés par l'académie. Si tout est beau, rien ne l'est. Mais si on fige les critères, on tue l'originalité qui définit l'art.`,
-    authors: ["Kant"],
-    themes: ["Art", "Raison", "Vérité"]
-  },
-  {
-    id: 25,
-    title: "Ricoeur : Utopie, idéologie et imagination politique",
-    content: `Ricoeur distingue deux fonctions de l'imagination en politique :
-
-UTOPIE : imaginer un monde meilleur pour changer celui-ci. Permet de remettre en question l'ordre établi, de penser le changement social. Fonction critique et créatrice. Exemple : imaginer une société plus juste, plus égalitaire.
-
-IDÉOLOGIE : se regrouper autour d'une représentation du monde garante de stabilité sociale. Fonction de cohésion sociale, d'identification collective. Donne du sens à l'ordre social existant.
-
-Danger de l'excès d'utopie : anarchie ou totalitarisme quand on veut plaquer brutalement l'utopie sur le réel. Exemples : goulag, révolutions qui tournent mal. Il ne faut pas essayer de brutaliser le réel, de rentrer le réel de force dans l'utopie. "Le meilleur des mondes" de Huxley.
-
-Danger de l'excès d'idéologie : rigidité, conformisme, entériner certaines injustices. Accepter l'ordre établi sans le remettre en question. Fossiliser les hiérarchies de domination.
-
-Équilibre nécessaire : l'une doit toujours contrebalancer l'autre. Trop d'imagination sans ancrage dans le réel = chaos. Mais l'imagination est utile pour imaginer le changement possible et souhaitable.
-
-L'imagination ne doit pas supplanter le réel mais l'enrichir. Elle est une passerelle vers le réel, pour mieux le voir. Expériences de pensée scientifiques (Galilée : espace vide) et philosophiques (Nozick : machine à expériences, allégorie de la caverne).
-
-L'imagination dépend de l'usage : elle peut être moralement et épistémologiquement bonne (imaginer un monde meilleur, expériences de pensée) ou mauvaise (se perdre dans le fantasme, nier le réel).
-
-L'utopie concrète (Ernst Bloch) : imagination qui se fonde sur les possibilités réelles inscrites dans le présent, pas utopie déconnectée du réel.`,
-    authors: ["Ricoeur"],
-    themes: ["Imagination", "État", "Justice"]
-  },
-  {
-    id: 26,
-    title: "Pascal : Le divertissement et la condition humaine",
-    content: `Pascal analyse le divertissement comme fuite de soi-même et de sa condition. L'homme ne supporte pas de rester seul dans sa chambre car confronté à sa misère, à son vide intérieur, aux questions existentielles.
-
-"Le roi sans divertissement" : même un roi, qui peut satisfaire tous ses désirs, s'ennuie. Un état où les désirs sont tous satisfaits n'est pas souhaitable car on n'a plus le divertissement du désir, plus de but, plus de quête.
-
-Le divertissement = fuir son ignorance, arrêter de se poser les bonnes questions. Perpétuel mouvement pour ne pas penser à sa condition. Agir pour ne pas penser. "Tout le malheur des hommes vient d'une seule chose, qui est de ne savoir pas demeurer en repos dans une chambre."
-
-L'homme est obsédé par des choses futiles (vanité) mais indifférent aux questions existentielles importantes. Pourquoi ? Le divertissement nous empêche de nous confronter à notre finitude, à la mort, au sens de notre existence.
-
-Exemples de divertissement : la chasse (on ne veut pas vraiment le lièvre, on veut la distraction de la chasse), le jeu, le travail obsessionnel, la sociabilité excessive. Ce qui compte n'est pas l'objet obtenu mais l'occupation elle-même.
-
-Pour Pascal, le vrai bonheur n'est pas dans le divertissement mais dans la confrontation avec la vérité, même douloureuse. Arrêter la fuite perpétuelle, accepter de se poser les bonnes questions. Chercher la vérité par la raison ET par le cœur.
-
-Le bonheur selon Pascal : rétablir le lien avec Dieu qu'on avait avant le péché originel. Accepter sa condition mais la transcender par la foi. Le désir d'infini en nous ne peut être rempli que par l'infini = Dieu. Sinon on reste dans une béance, un vide que rien de fini ne peut combler.
-
-"Tu nous as fait pour toi Seigneur et notre cœur est sans repos tant qu'il ne demeure en toi" (Saint-Augustin cité dans cette perspective pascalienne).`,
-    authors: ["Pascal"],
-    themes: ["Bonheur", "Conscience", "Religion", "Vérité"]
-  },
-  {
-    id: 27,
-    title: "Keynes vs Friedman : Interventionnisme et libéralisme économique",
-    content: `KEYNES (interventionnisme étatique) :
-Théorie : dans période de chômage, cercle vicieux. Chômage → baisse de consommation → moins de production → moins de travail → plus de chômage.
-
-Solution : l'État doit intervenir pour relancer la demande. Redistribuer équitablement les richesses pour que les gens souffrent le moins possible. La demande produit la production. Faut augmenter la demande.
-
-Politique : État met l'économie sous perfusion, distribue de l'argent pour que les ménages consomment. New Deal de Roosevelt, État-providence. L'État doit se charger de l'économie. Bonheur > liberté.
-
-Problèmes :
-1) Dévaluation → inflation
-2) Trauma : les gens ne dépensent pas, font des économies au cas où la crise revient → pas de relance de la demande
-3) Chômage + inflation = stagflation (années 70)
-
-Solution d'urgence mais peut marcher dans circonstances où on est obligé de consommer.
-
-FRIEDMAN (libéralisme économique) :
-Après crises pétrolières années 70 et échec de Keynes : tournant capitaliste avec Thatcher et Reagan. Liberté > bonheur. Arrêt de l'intervention de l'État. On n'essaye pas de sauver tout le monde.
-
-HAYEK : "La route de la servitude"
-Veut montrer les limites de l'interventionnisme. Si l'État doit garantir notre liberté plutôt que notre bonheur, il doit en revanche nous offrir la possibilité de poursuivre ce dernier. D'abord liberté, ensuite bonheur, mais faire en sorte que vie décente possible.
-
-Planisme = politique qui dirige l'économie. Risque totalitaire selon Hayek : État contrôle tout, aucune liberté économique, mène à la servitude.
-
-Question : L'État doit-il s'occuper de mon bonheur ? Réponse nuancée : non directement (liberticide) mais doit créer conditions matérielles. Conditions nécessaires mais pas suffisantes (Rawls). Le bonheur est moins un objet qu'une conséquence de trouver une signification, des relations qui ont du sens.`,
-    authors: ["Keynes", "Friedman", "Hayek"],
-    themes: ["État", "Liberté", "Justice", "Bonheur"]
-  },
-  {
-    id: 28,
-    title: "Bachelard : Objectivité scientifique et rupture épistémologique",
-    content: `Bachelard montre que la prétendue objectivité des faits est fausse. Les faits sont nécessairement le fruit d'une interprétation car un sujet regarde un objet.
-
-Exemple : Lois d'Archimède. Si on se fonde sur la perception brute des faits, vision erronée : la pesanteur de l'objet est proportionnelle à sa chute. Or ce n'est pas ça (résistance de l'air, etc.).
-
-Quand on regarde le réel sans hypothèse, ça nous induit en erreur. Il faut s'éloigner de la perception brute pour étudier correctement un fait. Rupture épistémologique nécessaire : rompre avec l'évidence première, le sens commun.
-
-La science se construit contre l'expérience première, contre l'évidence sensible. L'obstacle épistémologique principal = notre propre perception immédiate qui nous trompe.
-
-Exemples d'obstacles épistémologiques :
-- L'expérience première (croire ce qu'on voit immédiatement)
-- La connaissance générale (croire qu'on sait déjà)
-- L'obstacle verbal (les mots qui cachent la réalité)
-- L'obstacle substantialiste (chercher une "substance" derrière tout)
-
-La formation de l'esprit scientifique nécessite de surmonter ces obstacles. Le scientifique doit constamment se méfier de sa propre perception, de ses préjugés, de l'évidence.
-
-Pas sur l'objectivité du fait mais sur l'hypothèse face au fait. Le scientifique émet une hypothèse (rationalisme) qu'il teste sur les faits (empirisme). Les faits ne parlent pas d'eux-mêmes, c'est le scientifique qui les interroge.
-
-La science = dialogue entre théorie et expérience. On a besoin des faits pour tester notre hypothèse, mais les faits seuls ne suffisent pas. C'est la raison humaine qui construit les théories scientifiques.
-
-Science = cimetière de théories mortes remplacées par d'autres théories meilleures. Vérité scientifique = vérité probabiliste (milieu entre relativisme et objectivisme absolu).`,
-    authors: ["Bachelard"],
-    themes: ["Science", "Vérité", "Raison"]
-  },
-  {
-    id: 29,
-    title: "Durkheim : Faits sociaux et méthode sociologique",
-    content: `Durkheim fonde la sociologie comme science en définissant les faits sociaux : manières d'agir, de penser et de sentir extérieures à l'individu et douées d'un pouvoir de coercition.
-
-Caractéristiques du fait social :
-1) Extériorité : existe indépendamment des individus
-2) Contrainte : s'impose aux individus (sanctions si on ne suit pas)
-3) Généralité : partagé par l'ensemble d'un groupe
-
-Exemples : langage, monnaie, lois, modes vestimentaires, systèmes éducatifs.
-
-Méthode sociologique : "Traiter les faits sociaux comme des choses." Les étudier objectivement, de l'extérieur, comme on étudierait des objets naturels. Éviter les prénotions (idées préconçues).
-
-Différentes sciences et leur rapport aux faits :
-- Biologie : à échelle humaine, forme d'objectivité possible, sans trop de biais théoriques
-- Physique théorique : moins certaine, pas à l'échelle humaine (particules élémentaires)
-
-Même en biologie, les faits se font sur les hypothèses. L'objectivité du fait n'est pas absolue car on peut en tirer des hypothèses différentes. L'hypothèse qui gagne est celle confirmée par protocole expérimental.
-
-Les faits restent objectifs (on ne délire pas) mais ne sont pas très importants car on peut en tirer des hypothèses différentes. C'est la raison humaine qui crée les hypothèses, pas le fait seul.
-
-Science = ni relativisme absolu ni objectivisme absolu. Vérité probabiliste. La science trouve pas des vérités absolues mais explique plus ou moins de phénomènes.
-
-Les faits plus importants en bio, moins certains en physique théorique. Plusieurs modélisations possibles des mêmes faits, pas de calque fidèle des faits. Imaginer les rouages invisibles = explication des faits (comme horloge).
-
-Support de la science = raison humaine, pas uniquement les faits. Quel est le degré d'objectivité des sciences ? Entre relativisme et objectivisme.`,
-    authors: ["Durkheim"],
-    themes: ["Science", "Vérité", "Société"]
-  },
-  {
-    id: 30,
-    title: "Simone Weil : Responsabilité et connaissance de soi",
-    content: `Simone Weil s'oppose à l'idée d'un inconscient qui déresponsabiliserait. Pour elle, on est responsable de ce qu'on fait de ce qu'on est.
-
-L'inconscient = nom qu'on donne à notre paresse et lâcheté, au refus de se connaître. Si on fait un effort d'introspection suffisant, on peut se connaître. L'inconscient n'a de partialité que celle qu'on veut bien lui accorder.
-
-On n'est pas obligés d'être déterminés par notre inconscient. On peut faire l'effort d'être objectif avec soi-même, de se regarder honnêtement. Cela demande du courage, de l'exigence morale.
-
-Nos "déterminismes" sont souvent des excuses commodes pour ne pas assumer nos responsabilités. "Je ne peux pas m'en empêcher" / "C'est plus fort que moi" = refus de l'effort moral nécessaire.
-
-La connaissance de soi est un travail exigeant mais possible. Demande : lucidité (voir clair en soi), honnêteté (ne pas se mentir), courage (affronter ce qu'on découvre).
-
-Freud lui-même dit qu'on est responsable de se connaître assez pour maîtriser ses pulsions inconscientes. La cure psychanalytique = rendre conscient l'inconscient pour reprendre le contrôle.
-
-Pour Weil, nous ne sommes pas de simples jouets de forces inconscientes qui nous dépasseraient totalement. Nous avons la capacité de nous connaître et donc de nous transformer.
-
-Lien avec la liberté : si on accepte d'être totalement déterminés par un inconscient inaccessible, on renonce à notre liberté et à notre responsabilité morale. Or l'homme est un être moral, capable de choix.
-
-L'attention : concept central chez Weil. Porter attention = forme la plus haute de la conscience. Attention à soi-même (introspection), attention à autrui (compassion), attention au monde (lucidité). L'attention est un effort, une ascèse, mais libératrice.
-
-Conclusion : on ne peut pas tout mettre sur le dos de l'inconscient. Une part de liberté et de responsabilité demeure. Faire l'effort de se connaître = condition de la liberté et de la moralité.`,
-    authors: ["Simone Weil"],
-    themes: ["Conscience", "Liberté", "Morale", "Responsabilité"]
-  },
+Si la causalité n'est qu'une croyance, nos connaissances scientifiques ne sont que probables, jamais certaines.`,
+    authors: ["Hume"],
+    themes: ["Raison", "Science", "Vérité"],
+    links: []
+  }
 ];
 
-/* ===========================================================
-   =============== LOGIQUE JS ================================
-   =========================================================== */
-
-// Charger les cours depuis localStorage ou utiliser initialCourses
+// État de l'application
 let courses = [];
+let searchTags = [];
+let searchText = '';
+let searchID = '';
+let typeFilters = {
+  detailed: true,
+  general: true,
+  plan: true,
+  image: true
+};
+let newAuthors = [];
+let newThemes = [];
+let newLinks = [];
+let editingId = null;
+let expandedCourses = new Set(); // IDs des fiches déroulées
+
+// Variables temporaires pour la prévisualisation
+let previewData = null;
+
+// Initialisation
 try {
   const saved = localStorage.getItem('philosophyCourses');
   courses = saved ? JSON.parse(saved) : [...initialCourses];
@@ -901,251 +1015,893 @@ try {
   courses = [...initialCourses];
 }
 
-let searchTags = [];
-let newAuthors = [];
-let newThemes = [];
-let editingId = null;
+// Éléments DOM
+const els = {
+  searchInput: document.getElementById("searchInput"),
+  searchBtn: document.getElementById("searchBtn"),
+  clearFilters: document.getElementById("clearFilters"),
+  filterDetailed: document.getElementById("filterDetailed"),
+  filterGeneral: document.getElementById("filterGeneral"),
+  filterPlan: document.getElementById("filterPlan"),
+  filterImage: document.getElementById("filterImage"),
+  searchTags: document.getElementById("searchTags"),
+  courses: document.getElementById("courses"),
+  resultsCount: document.getElementById("resultsCount"),
+  addForm: document.getElementById("addForm-overlay"),
+  formTitle: document.getElementById("formTitle"),
+  toggleAdd: document.getElementById("toggleAdd"),
+  cancelAdd: document.getElementById("cancelAdd"),
+  courseType: document.getElementById("courseType"),
+  citationFields: document.getElementById("citationFields"),
+  imageUploadSection: document.getElementById("imageUploadSection"),
+  imageInput: document.getElementById("imageInput"),
+  imagePreview: document.getElementById("imagePreview"),
+  newTitle: document.getElementById("newTitle"),
+  newContent: document.getElementById("newContent"),
+  newAuthor: document.getElementById("newAuthor"),
+  authorSuggestions: document.getElementById("authorSuggestions"),
+  newTheme: document.getElementById("newTheme"),
+  themeSuggestions: document.getElementById("themeSuggestions"),
+  addAuthor: document.getElementById("addAuthor"),
+  addTheme: document.getElementById("addTheme"),
+  authorsList: document.getElementById("authorsList"),
+  themesList: document.getElementById("themesList"),
+  linkType: document.getElementById("linkType"),
+  linkTargetId: document.getElementById("linkTargetId"),
+  addLink: document.getElementById("addLink"),
+  addedLinks: document.getElementById("addedLinks"),
+  previewCourse: document.getElementById("previewCourse"),
+  insertLinkBtn: document.getElementById("insertLinkBtn"),
+  citationBtn: document.getElementById("citationBtn"),
+  boldBtn: document.getElementById("boldBtn"),
+  italicBtn: document.getElementById("italicBtn"),
+  underlineBtn: document.getElementById("underlineBtn"),
+  h3Btn: document.getElementById("h3Btn"),
+  modalOverlay: document.getElementById("modalOverlay"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalBody: document.getElementById("modalBody"),
+  previewOverlay: document.getElementById("previewOverlay"),
+  previewBody: document.getElementById("previewBody")
+};
 
-// Fonction pour sauvegarder dans localStorage
+// Sauvegarder
 function saveCourses() {
-  try {
-    localStorage.setItem('philosophyCourses', JSON.stringify(courses));
-  } catch (e) {
-    console.error('Erreur sauvegarde:', e);
+  localStorage.setItem('philosophyCourses', JSON.stringify(courses));
+}
+
+// Compter les lignes de texte
+function countLines(text) {
+  return text.split('\n').length;
+}
+
+// Basculer l'expansion d'une fiche
+window.toggleExpand = function(id) {
+  if (expandedCourses.has(id)) {
+    expandedCourses.delete(id);
+  } else {
+    expandedCourses.add(id);
   }
+  renderCourses();
+};
+
+// Parser les liens [ID] dans le contenu
+function parseContentLinks(content) {
+  return content.replace(/\[(\d+)\]/g, (match, id) => {
+    const course = courses.find(c => c.id === parseInt(id));
+    const title = course ? course.title : `Fiche #${id}`;
+    return `<a class="inline-link" onclick="scrollToCourse(${id})" title="${title}">#${id}</a>`;
+  });
 }
 
-// ELEMENTS
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const searchTagsDiv = document.getElementById("searchTags");
-const coursesDiv = document.getElementById("courses");
-const resultsCount = document.getElementById("resultsCount");
+// Parser le markdown simple (gras, italique, souligné, titres, citations)
+function parseMarkdown(text) {
+  return text
+    .replace(/<<<(.*?)>>>/gs, '<div class="citation-block">$1</div>')
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/__(.*?)__/g, '<u>$1</u>')
+    .replace(/^### (.+)$\n/gm, '<h3 style="color: #871c20; margin-bottom: 4px; font-size: 16px;">$1</h3>')
+    .replace(/^## (.+)$\n/gm, '<h3 style="color: #2e437d; margin-bottom: 6px; font-size: 18px;">$1</h3>')
+    .replace(/^# (.+)$\n/gm, '<h3 style="color: #2e7d32; margin-bottom: 8px; font-size: 20px;">$1</h3>');
+}
 
-const addForm = document.getElementById("addForm");
-const toggleAdd = document.getElementById("toggleAdd");
-const cancelAdd = document.getElementById("cancelAdd");
-
-const newTitle = document.getElementById("newTitle");
-const newContent = document.getElementById("newContent");
-
-const newAuthor = document.getElementById("newAuthor");
-const newTheme = document.getElementById("newTheme");
-const addAuthor = document.getElementById("addAuthor");
-const addTheme = document.getElementById("addTheme");
-
-const authorsList = document.getElementById("authorsList");
-const themesList = document.getElementById("themesList");
-
-const saveCourse = document.getElementById("saveCourse");
-
-
-// ====== AFFICHAGE DES COURS ======
-
-function renderCourses() {
-  const filtered = courses.filter(course =>
-    searchTags.length === 0 ||
-    searchTags.every(tag =>
-      course.authors.some(a => a.toLowerCase() === tag.toLowerCase()) ||
-      course.themes.some(t => t.toLowerCase() === tag.toLowerCase())
-    )
-  );
-
-  resultsCount.innerText = filtered.length + " résultat(s)";
-
-  coursesDiv.innerHTML = filtered.map(c => `
-    <div class="course-card">
-      <div class="course-actions">
-        <button class="btn-icon" onclick="editCourse(${c.id})">✏️ Éditer</button>
-        <button class="btn-icon delete" onclick="deleteCourse(${c.id})">🗑️</button>
-      </div>
-      
-      <h3>${c.title}</h3>
-
-      <div class="badges">
-        ${c.authors.map(a => `<span class="tag small">${a}</span>`).join("")}
-      </div>
-
-      <div class="badges">
-        ${c.themes.map(t => `<span class="tag small">${t}</span>`).join("")}
-      </div>
-
-      <p>${c.content.replace(/\n/g, "<br>")}</p>
+// Scroller vers une fiche (maintenant en modal)
+window.scrollToCourse = function(id) {
+  const course = courses.find(c => c.id === id);
+  if (!course) return;
+  
+  const typeLabels = {
+    general: '📋 Fiche généraliste',
+    detailed: '📄 Fiche détaillée',
+    plan: '📝 Plan détaillé',
+    image: '🖼️ Image'
+  };
+  
+  els.modalTitle.textContent = course.title;
+  
+  let contentHtml = `
+    <div class="course-type ${course.type || 'detailed'}">${typeLabels[course.type || 'detailed']}</div>
+    <div class="course-id">ID: #${course.id}</div>
+  `;
+  
+  contentHtml += `
+    <div class="badges">
+      ${course.authors.map(a => `<span class="tag small author">${a}</span>`).join("")}
     </div>
-  `).join("");
+    <div class="badges">
+      ${course.themes.map(t => `<span class="tag small theme">${t}</span>`).join("")}
+    </div>
+  `;
+  
+  if (course.type === 'image' && course.imageData) {
+    contentHtml += `<div class="image-container"><img src="${course.imageData}" alt="${course.title}"></div>`;
+    if (course.content) {
+      contentHtml += `<div class="card-content" style="margin-top: 15px;">${parseMarkdown(parseContentLinks(course.content)).replace(/\n/g, "<br>")}</div>`;
+    }
+  } else {
+    contentHtml += `<div class="card-content">${parseMarkdown(parseContentLinks(course.content)).replace(/\n/g, "<br>")}</div>`;
+  }
+  
+  if (course.links && course.links.length > 0) {
+    contentHtml += `
+      <div class="links-section">
+        <h4>🔗 Liens:</h4>
+        ${course.links.map(link => {
+          const target = courses.find(c => c.id === link.targetId);
+          const title = target ? target.title : `Fiche #${link.targetId}`;
+          return `
+            <div class="link-item" onclick="scrollToCourse(${link.targetId})">
+              <span class="link-type">${link.type}</span>
+              <strong>#${link.targetId}</strong> ${title}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  
+  els.modalBody.innerHTML = contentHtml;
+  els.modalOverlay.style.display = 'flex';
+};
+
+window.closeModal = function(event) {
+  if (!event || event.target === els.modalOverlay) {
+    els.modalOverlay.style.display = 'none';
+  }
+};
+
+window.closeModalForm = function(event) {
+  if (!event || event.target === els.addForm) {
+    els.addForm.style.display = 'none';
+  }
+};
+
+// Fermer le modal de prévisualisation
+window.closePreview = function(event) {
+  if (!event || event.target === els.previewOverlay) {
+    els.previewOverlay.style.display = 'none';
+    previewData = null;
+  }
+};
+
+// Retour à l'éditeur
+window.backToEditor = function() {
+  els.previewOverlay.style.display = 'none';
+  els.addForm.style.display = 'flex';
+};
+
+// Confirmation de la sauvegarde
+window.confirmSave = function() {
+  if (!previewData) return;
+  
+  saveCourseData(
+    previewData.title,
+    previewData.content,
+    previewData.type,
+    previewData.imageData
+  );
+  
+  els.previewOverlay.style.display = 'none';
+  previewData = null;
+  resetForm();
+};
+
+// Afficher les cours
+function renderCourses() {
+  const filtered = courses.filter(c => {
+    // Filtre par type
+    const typeMatch = typeFilters[c.type || 'detailed'];
+    if (!typeMatch) return false;
+    
+    // Filtre par tags (auteurs/thèmes)
+    const tagMatch = searchTags.length === 0 ||
+      searchTags.every(tag =>
+        c.authors.some(a => a.toLowerCase() === tag.toLowerCase()) ||
+        c.themes.some(t => t.toLowerCase() === tag.toLowerCase())
+      );
+    if (!tagMatch) return false;
+    
+    // Recherche textuelle dans le titre
+    if (searchText) {
+      const titleMatch = c.title.toLowerCase().includes(searchText.toLowerCase());
+      const tagMatch = c.authors.some(a => a.toLowerCase().includes(searchText.toLowerCase())) ||
+                       c.themes.some(t => t.toLowerCase().includes(searchText.toLowerCase()));
+      if (!(titleMatch || tagMatch)) return false;
+    }
+    // Recherche par ID
+    if (searchID) {
+      if (c.id.toString() !== searchID) return false;
+    }
+    
+    return true;
+  });
+
+  els.resultsCount.textContent = `${filtered.length} résultat(s)`;
+
+  if (filtered.length === 0) {
+    els.courses.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">Aucune fiche ne correspond à ces critères.</p>`;
+    return;
+  }
+
+  els.courses.innerHTML = filtered.map(c => {
+    const typeClass = c.type || 'detailed';
+    const typeLabels = {
+      general: '📋 Fiche généraliste',
+      detailed: '📄 Fiche détaillée',
+      plan: '📝 Plan détaillé',
+      image: '🖼️ Image'
+    };
+    const typeLabel = typeLabels[typeClass];
+    
+    let contentHtml = '';
+    if (typeClass === 'image' && c.imageData) {
+      contentHtml = `<div class="image-container"><img src="${c.imageData}" alt="${c.title}"></div>`;
+      if (c.content) {
+        contentHtml += `<div class="card-content" style="margin-top: 15px;">${parseMarkdown(parseContentLinks(c.content)).replace(/\n/g, "<br>")}</div>`;
+      }
+    } else {
+      const fullContent = parseMarkdown(parseContentLinks(c.content)).replace(/\n/g, "<br>");
+      const lines = countLines(c.content);
+      const isExpanded = expandedCourses.has(c.id);
+      
+      if (lines > 12 && !isExpanded) {
+        const truncatedContent = c.content.split('\n').slice(0, 8).join('\n');
+        contentHtml = `
+          <div class="card-content course-content truncated">
+            ${parseMarkdown(parseContentLinks(truncatedContent)).replace(/\n/g, "<br>")}
+          </div>
+          <button class="expand-btn" onclick="toggleExpand(${c.id})">▼ Voir plus</button>
+        `;
+      } else if (lines > 12 && isExpanded) {
+        contentHtml = `
+          <div class="card-content course-content">
+            ${fullContent}
+          </div>
+          <button class="expand-btn" onclick="toggleExpand(${c.id})">▲ Réduire</button>
+        `;
+      } else {
+        contentHtml = `<div class="card-content">${fullContent}</div>`;
+      }
+    }
+    
+    let linksHtml = '';
+    if (c.links && c.links.length > 0) {
+      linksHtml = `
+        <div class="links-section">
+          <h4>🔗 Liens:</h4>
+          ${c.links.map(link => {
+            const target = courses.find(course => course.id === link.targetId);
+            const title = target ? target.title : `Fiche #${link.targetId}`;
+            return `
+              <div class="link-item" onclick="scrollToCourse(${link.targetId})">
+                <span class="link-type">${link.type}</span>
+                <strong>#${link.targetId}</strong> ${title}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="course-card" id="course-${c.id}">
+        <div class="course-actions">
+          <button class="btn-icon" onclick="editCourse(${c.id})">✏️</button>
+          <button class="btn-icon delete" onclick="deleteCourse(${c.id})">🗑️</button>
+        </div>
+        <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 8px;">
+        <div class="course-type ${typeClass}" style="margin-right: 10px;">${typeLabel}</div>
+        <div class="course-id">ID: #${c.id}</div>
+        ${c.authors.map(a => `<span class="tag small author" onclick="addSearchTag('${a}')">${a}</span>`).join("")}
+        ${c.themes.map(t => `<span class="tag small theme" onclick="addSearchTag('${t}')">${t}</span>`).join("")}
+        </div>
+        <h2>${c.title}</h2>
+
+        ${contentHtml}
+        
+        ${linksHtml}
+      </div>
+    `;
+  }).join("");
 }
 
-
-// ====== TAGS DE RECHERCHE ======
-
+// Tags de recherche
 function renderSearchTags() {
-  searchTagsDiv.innerHTML = searchTags
-    .map(tag => `
-      <span class="tag">${tag}
+  els.searchTags.innerHTML = (
+    searchTags.map(tag => `
+      <span class="tag active">${tag}
         <span class="remove" onclick="removeTag('${tag}')">×</span>
       </span>
-    `).join("");
+    `).join("") +
+    (searchID ? `
+      <span class="tag active">#${searchID}
+        <span class="remove" onclick="removeTag(${searchID})">×</span>
+      </span>
+    ` : "")
+  );
 }
 
-function removeTag(tag) {
-  searchTags = searchTags.filter(t => t !== tag);
-  renderSearchTags();
-  renderCourses();
-}
-
-searchBtn.onclick = () => {
-  const val = searchInput.value.trim();
-  if (val && !searchTags.includes(val)) {
-    searchTags.push(val);
-    searchInput.value = "";
+window.addSearchTag = function(tag) {
+  if (!searchTags.includes(tag)) {
+    searchTags.push(tag);
     renderSearchTags();
     renderCourses();
   }
 };
 
-
-// ====== FORMULAIRE ======
-
-toggleAdd.onclick = () => {
-  editingId = null;
-  newTitle.value = "";
-  newContent.value = "";
-  newAuthors = [];
-  newThemes = [];
-  authorsList.innerHTML = "";
-  themesList.innerHTML = "";
-  saveCourse.textContent = "Enregistrer";
-  addForm.classList.toggle("hidden");
-};
-
-cancelAdd.onclick = () => {
-  editingId = null;
-  addForm.classList.add("hidden");
-};
-
-
-// ====== AUTEURS ======
-
-addAuthor.onclick = () => {
-  const val = newAuthor.value.trim();
-  if (val && !newAuthors.includes(val)) {
-    newAuthors.push(val);
-    newAuthor.value = "";
-    authorsList.innerHTML = newAuthors.map(a => `
-      <span class="tag small">${a} <span class="remove" onclick="removeAuthor('${a}')">×</span></span>
-    `).join("");
+window.removeTag = function(tag) {
+  if (tag.toString() === searchID) {
+    searchID = '';
+    renderSearchTags();
+    renderCourses();
+    return;
   }
-};
-
-function removeAuthor(a) {
-  newAuthors = newAuthors.filter(x => x !== a);
-  authorsList.innerHTML = newAuthors.map(x => `<span class="tag small">${x}</span>`).join("");
-}
-
-
-// ====== THEMES ======
-
-addTheme.onclick = () => {
-  const val = newTheme.value.trim();
-  if (val && !newThemes.includes(val)) {
-    newThemes.push(val);
-    newTheme.value = "";
-    themesList.innerHTML = newThemes.map(t => `
-      <span class="tag small">${t} <span class="remove" onclick="removeTheme('${t}')">×</span></span>
-    `).join("");
-  }
-};
-
-function removeTheme(t) {
-  newThemes = newThemes.filter(x => x !== t);
-  themesList.innerHTML = newThemes.map(x => `<span class="tag small">${x}</span>`).join("");
-}
-
-
-// ====== ENREGISTRER COURS ======
-
-saveCourse.onclick = () => {
-  const title = newTitle.value.trim();
-  const content = newContent.value.trim();
-
-  if (!title || !content) return alert("Il manque un titre ou un contenu.");
-
-  if (editingId) {
-    // Mode édition
-    const index = courses.findIndex(c => c.id === editingId);
-    if (index !== -1) {
-      courses[index] = {
-        ...courses[index],
-        title,
-        content,
-        authors: [...newAuthors],
-        themes: [...newThemes]
-      };
-    }
-    editingId = null;
-  } else {
-    // Mode création
-    courses.push({
-      id: Date.now(),
-      title,
-      content,
-      authors: [...newAuthors],
-      themes: [...newThemes]
-    });
-  }
-
-  newAuthors = [];
-  newThemes = [];
-
-  newTitle.value = "";
-  newContent.value = "";
-  authorsList.innerHTML = "";
-  themesList.innerHTML = "";
-
-  addForm.classList.add("hidden");
-  saveCourses();
+  searchTags = searchTags.filter(t => t !== tag);
+  renderSearchTags();
   renderCourses();
 };
 
-// ====== ÉDITER COURS ======
+els.searchBtn.onclick = () => search();
+els.searchInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    search();
+  }
+});
 
-function editCourse(id) {
+function search() {
+  const val = els.searchInput.value.trim();
+  searchText = '';
+  if (val) {
+    // Si c'est un tag existant (auteur/thème), l'ajouter aux tags
+    const allAuthors = getAllAuthors();
+    const allThemes = getAllThemes();
+    
+    if (allAuthors.some(a => a.toLowerCase() === val.toLowerCase()) ||
+        allThemes.some(t => t.toLowerCase() === val.toLowerCase())) {
+      if (!searchTags.includes(val)) {
+        searchTags.push(val);
+        renderSearchTags();
+      }
+      els.searchInput.value = '';
+    } else if (val.startsWith('#')) {
+      // Si c'est de la forme #ID, chercher la fiche par ID
+      searchID = val.slice(1);
+      renderSearchTags();
+      els.searchInput.value = '';
+    
+    } else {
+      // Sinon, c'est une recherche textuelle dans le titre
+      searchText = val;
+    }
+    
+    renderCourses();
+  }
+};
+
+// Recherche en temps réel dans le titre (optionnel)
+els.searchInput.addEventListener('input', () => {
+  searchText = els.searchInput.value.trim();
+  renderCourses();
+});
+
+els.clearFilters.onclick = () => {
+  searchTags = [];
+  searchText = '';
+  searchID = '';
+  els.searchInput.value = '';
+  typeFilters = {
+    detailed: true,
+    general: true,
+    plan: true,
+    image: true
+  };
+  els.filterDetailed.checked = true;
+  els.filterGeneral.checked = true;
+  els.filterPlan.checked = true;
+  els.filterImage.checked = true;
+  renderSearchTags();
+  renderCourses();
+};
+
+// Gestion des filtres par type
+els.filterDetailed.addEventListener('change', (e) => {
+  typeFilters.detailed = e.target.checked;
+  renderCourses();
+});
+
+els.filterGeneral.addEventListener('change', (e) => {
+  typeFilters.general = e.target.checked;
+  renderCourses();
+});
+
+els.filterPlan.addEventListener('change', (e) => {
+  typeFilters.plan = e.target.checked;
+  renderCourses();
+});
+
+els.filterImage.addEventListener('change', (e) => {
+  typeFilters.image = e.target.checked;
+  renderCourses();
+});
+
+// Obtenir tous les auteurs uniques
+function getAllAuthors() {
+  const authors = new Set();
+  courses.forEach(c => c.authors.forEach(a => authors.add(a)));
+  return Array.from(authors).sort();
+}
+
+// Obtenir tous les thèmes uniques
+function getAllThemes() {
+  const themes = new Set();
+  courses.forEach(c => c.themes.forEach(t => themes.add(t)));
+  return Array.from(themes).sort();
+}
+
+// Système d'autocomplétion pour auteurs
+els.newAuthor.addEventListener('input', () => {
+  const val = els.newAuthor.value.toLowerCase();
+  if (!val) {
+    els.authorSuggestions.classList.remove('active');
+    return;
+  }
+  
+  const allAuthors = getAllAuthors();
+  const matches = allAuthors.filter(a => 
+    a.toLowerCase().includes(val) && !newAuthors.includes(a)
+  );
+  
+  if (matches.length > 0) {
+    els.authorSuggestions.innerHTML = matches.map(a => 
+      `<div class="suggestion-item" onclick="selectAuthor('${a}')">${a}</div>`
+    ).join('');
+    els.authorSuggestions.classList.add('active');
+  } else {
+    els.authorSuggestions.classList.remove('active');
+  }
+});
+
+window.selectAuthor = function(author) {
+  if (!newAuthors.includes(author)) {
+    newAuthors.push(author);
+    renderAuthorsList();
+  }
+  els.newAuthor.value = '';
+  els.authorSuggestions.classList.remove('active');
+};
+
+// Système d'autocomplétion pour thèmes
+els.newTheme.addEventListener('input', () => {
+  const val = els.newTheme.value.toLowerCase();
+  if (!val) {
+    els.themeSuggestions.classList.remove('active');
+    return;
+  }
+  
+  const allThemes = getAllThemes();
+  const matches = allThemes.filter(t => 
+    t.toLowerCase().includes(val) && !newThemes.includes(t)
+  );
+  
+  if (matches.length > 0) {
+    els.themeSuggestions.innerHTML = matches.map(t => 
+      `<div class="suggestion-item" onclick="selectTheme('${t}')">${t}</div>`
+    ).join('');
+    els.themeSuggestions.classList.add('active');
+  } else {
+    els.themeSuggestions.classList.remove('active');
+  }
+});
+
+window.selectTheme = function(theme) {
+  if (!newThemes.includes(theme)) {
+    newThemes.push(theme);
+    renderThemesList();
+  }
+  els.newTheme.value = '';
+  els.themeSuggestions.classList.remove('active');
+};
+
+// Fermer les suggestions en cliquant ailleurs
+document.addEventListener('click', (e) => {
+  if (!els.newAuthor.contains(e.target) && !els.authorSuggestions.contains(e.target)) {
+    els.authorSuggestions.classList.remove('active');
+  }
+  if (!els.newTheme.contains(e.target) && !els.themeSuggestions.contains(e.target)) {
+    els.themeSuggestions.classList.remove('active');
+  }
+});
+
+// Formulaire
+els.toggleAdd.onclick = () => {
+  resetForm();
+  if (els.addForm.style.display === 'flex') {
+    els.addForm.style.display = 'none';
+  } else {
+    els.addForm.style.display = 'flex';
+  }
+};
+
+els.cancelAdd.onclick = () => {
+  if ((els.newContent.value=="" && els.newTitle.value=="" && els.newAuthor.value=="" && els.imageInput.value == "" && newAuthors.length === 0 && newThemes.length === 0 && newLinks.length === 0) || confirm("Annuler la création/modification de la fiche ? Les modifications non sauvegardées seront perdues.")) {
+    resetForm();
+    els.addForm.style.display = 'none';
+  }
+};
+
+// Gestion du type de fiche
+els.courseType.addEventListener('change', () => {
+  const type = els.courseType.value;
+  
+  if (type === 'image') {
+    els.imageUploadSection.classList.remove('hidden');
+  } else {
+    els.imageUploadSection.classList.add('hidden');
+  }
+});
+
+// Gestion de l'upload d'image
+els.imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      els.imagePreview.innerHTML = `<img src="${event.target.result}" style="max-width: 300px; border-radius: 5px;">`;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+function resetForm() {
+  editingId = null;
+  els.formTitle.textContent = "Ajouter une fiche";
+  els.newTitle.value = "";
+  els.newContent.value = "";
+  els.courseType.value = "detailed";
+  els.imageUploadSection.classList.add('hidden');
+  els.imageInput.value = "";
+  els.imagePreview.innerHTML = "";
+  newAuthors = [];
+  newThemes = [];
+  newLinks = [];
+  renderAuthorsList();
+  renderThemesList();
+  renderAddedLinks();
+}
+
+// Auteurs
+function renderAuthorsList() {
+  els.authorsList.innerHTML = newAuthors.map(a => `
+    <span class="tag small">${a} <span class="remove" onclick="removeAuthor('${a}')">×</span></span>
+  `).join("");
+}
+
+window.removeAuthor = function(a) {
+  newAuthors = newAuthors.filter(x => x !== a);
+  renderAuthorsList();
+};
+
+els.addAuthor.onclick = () => {
+  const val = els.newAuthor.value.trim();
+  if (val && !newAuthors.includes(val)) {
+    newAuthors.push(val);
+    els.newAuthor.value = "";
+    renderAuthorsList();
+  }
+};
+
+// Thèmes
+function renderThemesList() {
+  els.themesList.innerHTML = newThemes.map(t => `
+    <span class="tag small">${t} <span class="remove" onclick="removeTheme('${t}')">×</span></span>
+  `).join("");
+}
+
+window.removeTheme = function(t) {
+  newThemes = newThemes.filter(x => x !== t);
+  renderThemesList();
+};
+
+els.addTheme.onclick = () => {
+  const val = els.newTheme.value.trim();
+  if (val && !newThemes.includes(val)) {
+    newThemes.push(val);
+    els.newTheme.value = "";
+    renderThemesList();
+  }
+};
+
+// Liens
+function renderAddedLinks() {
+  els.addedLinks.innerHTML = newLinks.map((link, i) => {
+    const target = courses.find(c => c.id === link.targetId);
+    const title = target ? target.title : `Fiche #${link.targetId}`;
+    return `
+      <div class="added-link">
+        <span><strong>${link.type}</strong> → #${link.targetId} ${title}</span>
+        <button type="button" class="btn-icon delete" onclick="removeLink(${i})">×</button>
+      </div>
+    `;
+  }).join("");
+}
+
+window.removeLink = function(i) {
+  newLinks.splice(i, 1);
+  renderAddedLinks();
+};
+
+els.addLink.onclick = () => {
+  const type = els.linkType.value;
+  const targetId = parseInt(els.linkTargetId.value);
+  
+  if (!targetId) {
+    alert("Veuillez entrer un ID valide");
+    return;
+  }
+  
+  if (newLinks.some(l => l.targetId === targetId && l.type === type)) {
+    alert("Ce lien existe déjà");
+    return;
+  }
+  
+  newLinks.push({ type, targetId });
+  els.linkTargetId.value = "";
+  renderAddedLinks();
+};
+
+// Insertion de lien dans le texte
+els.insertLinkBtn.onclick = () => {
+  const id = prompt("Entrez l'ID de la fiche à lier:");
+  if (id) {
+    const pos = els.newContent.selectionStart;
+    const before = els.newContent.value.substring(0, pos);
+    const after = els.newContent.value.substring(pos);
+    els.newContent.value = before + `[${id}]` + after;
+    els.newContent.focus();
+  }
+};
+
+// Boutons de formatage avec détection des symboles existants
+function wrapSelection(before, after) {
+  const start = els.newContent.selectionStart;
+  const end = els.newContent.selectionEnd;
+  const text = els.newContent.value;
+  const selected = text.substring(start, end);
+  
+  // Vérifier si le texte est déjà formaté
+  const beforeStart = text.substring(Math.max(0, start - before.length), start);
+  const afterEnd = text.substring(end, Math.min(text.length, end + after.length));
+  
+  if (beforeStart === before && afterEnd === after) {
+    // Retirer le formatage
+    const newText = text.substring(0, start - before.length) + selected + text.substring(end + after.length);
+    els.newContent.value = newText;
+    els.newContent.focus();
+    els.newContent.setSelectionRange(start - before.length, end - before.length);
+  } else if (selected) {
+    // Ajouter le formatage
+    const newText = text.substring(0, start) + before + selected + after + text.substring(end);
+    els.newContent.value = newText;
+    els.newContent.focus();
+    els.newContent.setSelectionRange(start + before.length, end + before.length);
+  } else {
+    // Pas de sélection, ajouter les symboles
+    const newText = text.substring(0, start) + before + after + text.substring(start);
+    els.newContent.value = newText;
+    els.newContent.focus();
+    els.newContent.setSelectionRange(start + before.length, start + before.length);
+  }
+}
+
+els.boldBtn.onclick = () => wrapSelection('**', '**');
+els.italicBtn.onclick = () => wrapSelection('*', '*');
+els.underlineBtn.onclick = () => wrapSelection('__', '__');
+els.citationBtn.onclick = () => wrapSelection('<<<', '>>>');
+els.h3Btn.onclick = () => {
+  const start = els.newContent.selectionStart;
+  const text = els.newContent.value;
+  const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+  const newText = text.substring(0, lineStart) + '### ' + text.substring(lineStart);
+  els.newContent.value = newText;
+  els.newContent.focus();
+};
+
+// Prévisualisation avant sauvegarde
+els.previewCourse.onclick = () => {
+  const title = els.newTitle.value.trim();
+  const content = els.newContent.value.trim();
+  const type = els.courseType.value;
+
+  if (!title) {
+    alert("Titre requis");
+    return;
+  }
+  
+  if (type !== 'image' && !content) {
+    alert("Contenu requis");
+    return;
+  }
+
+  let imageData = null;
+  if (type === 'image') {
+    if (editingId) {
+      const oldCourse = courses.find(c => c.id === editingId);
+      imageData = oldCourse?.imageData;
+    }
+    
+    if (els.imageInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imageData = e.target.result;
+        showPreview(title, content, type, imageData);
+      };
+      reader.readAsDataURL(els.imageInput.files[0]);
+      return;
+    } else if (!imageData) {
+      alert("Veuillez sélectionner une image");
+      return;
+    }
+  }
+  
+  showPreview(title, content, type, imageData);
+};
+
+// Afficher le modal de prévisualisation
+function showPreview(title, content, type, imageData) {
+  previewData = { title, content, type, imageData };
+  
+  const typeLabels = {
+    general: '📋 Fiche généraliste',
+    detailed: '📄 Fiche détaillée',
+    plan: '📝 Plan détaillé',
+    image: '🖼️ Image'
+  };
+  
+  let contentHtml = `
+    <div class="course-type ${type}">${typeLabels[type]}</div>
+    <div class="course-id">ID: #${editingId || 'New'}</div>
+    <h2 style="color: #8B4000; margin-bottom: 15px;">${title}</h2>
+  `;
+  
+  contentHtml += `
+    <div class="badges">
+      ${newAuthors.map(a => `<span class="tag small author">${a}</span>`).join("")}
+    </div>
+    <div class="badges">
+      ${newThemes.map(t => `<span class="tag small theme">${t}</span>`).join("")}
+    </div>
+  `;
+  
+  if (type === 'image' && imageData) {
+    contentHtml += `<div class="image-container"><img src="${imageData}" alt="${title}"></div>`;
+    if (content) {
+      contentHtml += `<div class="card-content" style="margin-top: 15px;">${parseMarkdown(parseContentLinks(content)).replace(/\n/g, "<br>")}</div>`;
+    }
+  } else {
+    contentHtml += `<div class="card-content" style="margin-top: 15px;">${parseMarkdown(parseContentLinks(content)).replace(/\n/g, "<br>")}</div>`;
+  }
+  
+  if (newLinks.length > 0) {
+    contentHtml += `
+      <div class="links-section">
+        <h4>🔗 Liens:</h4>
+        ${newLinks.map(link => {
+          const target = courses.find(c => c.id === link.targetId);
+          const targetTitle = target ? target.title : `Fiche #${link.targetId}`;
+          return `
+            <div class="link-item">
+              <span class="link-type">${link.type}</span>
+              <strong>#${link.targetId}</strong> ${targetTitle}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  
+  els.previewBody.innerHTML = contentHtml;
+  els.addForm.style.display = 'none';
+  els.previewOverlay.style.display = 'flex';
+}
+
+// Sauvegarde effective
+function saveCourseData(title, content, type, imageData) {
+  if (editingId) {
+    const i = courses.findIndex(c => c.id === editingId);
+    if (i !== -1) {
+      courses[i] = {
+        ...courses[i],
+        type,
+        title,
+        content,
+        imageData,
+        authors: [...newAuthors],
+        themes: [...newThemes],
+        links: [...newLinks]
+      };
+    }
+  } else {
+    courses.push({
+      id: courses.length > 0 ? Math.max(...courses.map(c => c.id)) + 1 : 1,
+      type,
+      title,
+      content,
+      imageData,
+      authors: [...newAuthors],
+      themes: [...newThemes],
+      links: [...newLinks]
+    });
+  }
+
+  saveCourses();
+  resetForm();
+  els.addForm.style.display = 'none';
+  renderCourses();
+}
+
+// Éditer
+window.editCourse = function(id) {
   const course = courses.find(c => c.id === id);
   if (!course) return;
 
   editingId = id;
-  newTitle.value = course.title;
-  newContent.value = course.content;
+  els.formTitle.textContent = "Modifier la fiche";
+  els.newTitle.value = course.title;
+  els.newContent.value = course.content || '';
+  els.courseType.value = course.type || 'detailed';
+  
+  if (course.type === 'image') {
+    els.imageUploadSection.classList.remove('hidden');
+    if (course.imageData) {
+      els.imagePreview.innerHTML = `<img src="${course.imageData}" style="max-width: 300px; border-radius: 5px;">`;
+    }
+  } else {
+    els.imageUploadSection.classList.add('hidden');
+  }
+  
   newAuthors = [...course.authors];
   newThemes = [...course.themes];
+  newLinks = course.links ? [...course.links] : [];
 
-  authorsList.innerHTML = newAuthors.map(a => `
-    <span class="tag small">${a} <span class="remove" onclick="removeAuthor('${a}')">×</span></span>
-  `).join("");
+  renderAuthorsList();
+  renderThemesList();
+  renderAddedLinks();
 
-  themesList.innerHTML = newThemes.map(t => `
-    <span class="tag small">${t} <span class="remove" onclick="removeTheme('${t}')">×</span></span>
-  `).join("");
-
-  saveCourse.textContent = "Mettre à jour";
-  addForm.classList.remove("hidden");
+  els.addForm.style.display = 'flex';
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+};
 
-// ====== SUPPRIMER COURS ======
-
-function deleteCourse(id) {
-  if (!confirm("Voulez-vous vraiment supprimer ce cours ?")) return;
-  
+// Supprimer
+window.deleteCourse = function(id) {
+  if (!confirm("Supprimer cette fiche ?")) return;
   courses = courses.filter(c => c.id !== id);
   saveCourses();
   renderCourses();
-}
+};
 
-
-// PREMIER AFFICHAGE
+// Initialisation
 renderCourses();
-
 </script>
 
 </body>
